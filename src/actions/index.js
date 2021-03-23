@@ -3,6 +3,8 @@ import {
     ZOOM_OUT,
     SET_VALUE,
     TO_ADDRESS,
+    MOVE_LEFT,
+    MOVE_RIGHT,
 } from '../types';
 import axios from 'axios';
 
@@ -31,5 +33,17 @@ export const toAddress = (value) => (dispatch) => {
     dispatch({
         type: TO_ADDRESS,
         payload: value,
+    });
+};
+
+export const moveLeft = () => (dispatch) => {
+    dispatch({
+        type: MOVE_LEFT,
+    });
+};
+
+export const moveRight = () => (dispatch) => {
+    dispatch({
+        type: MOVE_RIGHT,
     });
 };

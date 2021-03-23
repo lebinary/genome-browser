@@ -3,6 +3,8 @@ import {
     ZOOM_OUT,
     SET_VALUE,
     TO_ADDRESS,
+    MOVE_LEFT,
+    MOVE_RIGHT,
 } from '../types';
 
 const initialState = {
@@ -18,6 +20,10 @@ export default function(state = initialState, action) {
             return {...state, min: state.min +1, max: state.max -1};
         case ZOOM_OUT:
             return {...state, min: state.min>0? state.min -1: state.min, max: state.max<3000000000? state.max +1 : state.max};
+        case MOVE_LEFT:
+            return {...state, min: state.min -10, max: state.max -10};
+        case MOVE_RIGHT:
+            return {...state, min: state.min +10, max: state.max +10};
         case SET_VALUE:
             return {...state, value: payload};
         case TO_ADDRESS:

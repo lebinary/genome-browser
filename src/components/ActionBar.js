@@ -17,14 +17,14 @@ const useStyles = makeStyles((theme) => ({
       display: 'flex',
       alignItems: 'center',
       width: 200,
-      color: lightBlue
+      color: "#19416D"
     },
     paperLeft: {
       margin: '0 10px 0 0',
       display: 'flex',
       alignItems: 'center',
       width: 200,
-      color: lightBlue
+      color: "#19416D"
     },
     input: {
       marginLeft: theme.spacing(1),
@@ -35,6 +35,7 @@ const useStyles = makeStyles((theme) => ({
     },
     button: {
       margin: '0px 10px',
+      backgroundColor: "#19416D",
     }
 }));
 
