@@ -5,6 +5,7 @@ import {
     TO_ADDRESS,
     MOVE_LEFT,
     MOVE_RIGHT,
+    GET_DATA,
 } from '../types';
 import axios from 'axios';
 
@@ -45,5 +46,11 @@ export const moveLeft = () => (dispatch) => {
 export const moveRight = () => (dispatch) => {
     dispatch({
         type: MOVE_RIGHT,
+    });
+};
+
+export const getData = () => (dispatch) => {
+    dispatch({
+        type: GET_DATA,
     });
 };
