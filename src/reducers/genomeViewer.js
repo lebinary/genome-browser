@@ -2,7 +2,7 @@ import {
     ZOOM_IN,
     ZOOM_OUT,
     SET_VALUE,
-    TO_ADDRESS,
+    SET_RANGE,
     MOVE_LEFT,
     MOVE_RIGHT,
     GET_DATA,
@@ -37,8 +37,8 @@ export default function(state = initialState, action) {
             return {...state, min: state.min +10, max: state.max +10};
         case SET_VALUE:
             return {...state, value: payload};
-        case TO_ADDRESS:
-            return {...state, min: payload<=5? 0: payload-5, max: parseInt(payload)+5, value: payload};
+        case SET_RANGE:
+            return {...state, min: payload.from, max: payload.to};
         case GET_DATA:
             let data = [];
             let reference = [];

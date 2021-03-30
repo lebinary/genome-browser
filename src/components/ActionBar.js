@@ -1,10 +1,8 @@
 import React, { Fragment, useState } from 'react';
 import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
-import { IconButton, InputBase, Paper, Button, Container, makeStyles } from '@material-ui/core';
-import SearchIcon from '@material-ui/icons/Search';
-import { lightBlue } from '@material-ui/core/colors';
-import {toAddress} from '../actions';
+import {connect} from 'react-redux';
+import {InputBase, Paper, Button, Container, makeStyles} from '@material-ui/core';
+import {setRange} from '../actions';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -39,22 +37,35 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-const ActionBar = ({toAddress}) => {
+const ActionBar = ({setRange}) => {
   const classes = useStyles();
-  const [address, setAddress] = useState(0);
+  const [from, setFrom] = useState(0);
+  const [to, setTo] = useState(from+10);
 
-  const handleChange = (e) => {
-    setAddress(e.target.value);
+  const handleChangeFrom = (e) => {
+    if(e.target.value > 0){
+      setFrom(e.target.value);
+    }else{
+      setFrom(0);
+    }
+  };
+
+  const handleChangeTo = (e) => {
+    if(e.target.value > from+10){
+      setTo(e.target.value);
+    }else{
+      setTo(from+10);
+    }
   };
 
   const handleClick = (e) => {
-    toAddress(address);
+    setRange({from, to});
   };
 
   return(
     <Fragment>
       <Container className={classes.root} maxWidth="100%">
-        <Paper component="form" className={classes.paperLeft}>
+        {/* <Paper component="form" className={classes.paperLeft}>
           <InputBase
             className={classes.input}
             placeholder="Search"
@@ -62,13 +73,24 @@ const ActionBar = ({toAddress}) => {
           <IconButton type="submit" className={classes.iconButton} aria-label="search">
             <SearchIcon />
           </IconButton>
-        </Paper>
+        </Paper> */}
         <Paper component="form" className={classes.paper}>
           <InputBase
             className={classes.input}
-            placeholder="DNA Address"
+            placeholder="From"
             type="number"
-            onChange={handleChange}
+            onChange={handleChangeFrom}
+            value={from}
+          />
+          
+          :
+
+          <InputBase
+            className={classes.input}
+            placeholder="To"
+            type="number"
+            onChange={handleChangeTo}
+            value={to}
           />
         </Paper>
         <Button variant="contained" color="primary" className={classes.button} onClick={handleClick}>
@@ -80,11 +102,7 @@ const ActionBar = ({toAddress}) => {
 };
 
 ActionBar.propTypes = {
-  toAddress: PropTypes.func.isRequired,
+  setRange: PropTypes.func.isRequired,
 };
 
-const mapStateToProps = (state) => ({
-  // genomeViewer: state.genomeViewer
-});
-
-export default connect(null, {toAddress})(ActionBar);
+export default connect(null, {setRange})(ActionBar);

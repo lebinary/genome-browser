@@ -2,7 +2,7 @@ import React, {useEffect} from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import {zoomOut, zoomIn, setVal, moveLeft, moveRight, getData} from '../actions';
-import {Typography, Grid, Button, makeStyles, Divider } from '@material-ui/core';
+import {Typography, Grid, Button, makeStyles } from '@material-ui/core';
 import Arrow from '@elsdoerfer/react-arrow';
 
 import Gene from './Gene';
@@ -85,7 +85,16 @@ const GenomeViewer = ({getData, zoomIn, zoomOut, moveLeft, moveRight, genomeView
                 moveRight();
             }
         }
-    }
+    };
+
+    const showCordinate = (e, id) => {
+        const canvas = document.getElementById(id);
+        const rect = canvas.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        alert(`X: ${x}, Y: ${y}`);
+        console.log(e);
+    };
 
     const drawLine = (info, style, lineCap = {}) => {
         const { x, y, x1, y1 } = info;
@@ -167,6 +176,9 @@ const GenomeViewer = ({getData, zoomIn, zoomOut, moveLeft, moveRight, genomeView
 
     return(
         <div className={classes.root} onWheel={handleScroll}>
+            <div>
+
+            </div>
             <Grid container className={classes.container} spacing={3}>
                 <Grid item xs={1}>
                     <Typography id="discrete-slider-small-steps" gutterBottom>
@@ -174,7 +186,7 @@ const GenomeViewer = ({getData, zoomIn, zoomOut, moveLeft, moveRight, genomeView
                     </Typography>
                 </Grid>
                 <Grid className={classes.reference} item xs={11}>
-                    <canvas id="reference" width="2000" height="50" style={{
+                    <canvas id="reference" width="2000" height="50" onClick={(e) => showCordinate(e, "reference")} style={{
                         width: '100%',
                         height: '100%',
                     }}></canvas>
@@ -207,7 +219,7 @@ const GenomeViewer = ({getData, zoomIn, zoomOut, moveLeft, moveRight, genomeView
                         />
                     </Button>
                 </Grid>
-                <Grid item xs={1}>
+                {/* <Grid item xs={1}>
                     <Typography id="discrete-slider-small-steps" gutterBottom>
                         Position
                     </Typography>
@@ -226,7 +238,7 @@ const GenomeViewer = ({getData, zoomIn, zoomOut, moveLeft, moveRight, genomeView
                         width: '45%'
                         }}
                     />
-                </Grid>
+                </Grid> */}
                 <Gene />
                 <Coverage data={data} />
                 <Alignments data={data}/>

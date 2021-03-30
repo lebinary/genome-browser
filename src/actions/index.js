@@ -2,7 +2,7 @@ import {
     ZOOM_IN,
     ZOOM_OUT,
     SET_VALUE,
-    TO_ADDRESS,
+    SET_RANGE,
     MOVE_LEFT,
     MOVE_RIGHT,
     GET_DATA,
@@ -30,10 +30,10 @@ export const setVal = (value) => (dispatch) => {
     });
 };
 
-export const toAddress = (value) => (dispatch) => {
+export const setRange = (rangeObj) => (dispatch) => {
     dispatch({
-        type: TO_ADDRESS,
-        payload: value,
+        type: SET_RANGE,
+        payload: rangeObj,
     });
 };
 
