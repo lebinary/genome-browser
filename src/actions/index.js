@@ -37,15 +37,17 @@ export const setRange = (rangeObj) => (dispatch) => {
     });
 };
 
-export const moveLeft = () => (dispatch) => {
+export const moveLeft = (moveRange) => (dispatch) => {
     dispatch({
         type: MOVE_LEFT,
+        payload: moveRange
     });
 };
 
-export const moveRight = () => (dispatch) => {
+export const moveRight = (moveRange) => (dispatch) => {
     dispatch({
         type: MOVE_RIGHT,
+        payload: moveRange
     });
 };
 

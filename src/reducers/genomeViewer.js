@@ -32,9 +32,9 @@ export default function(state = initialState, action) {
         case ZOOM_OUT:
             return {...state, min: state.min>0? state.min -2: state.min, max: state.max<3000000000? state.max +2 : state.max};
         case MOVE_LEFT:
-            return {...state, min: state.min -10, max: state.max -10};
+            return {...state, min: state.min -payload, max: state.max -payload};
         case MOVE_RIGHT:
-            return {...state, min: state.min +10, max: state.max +10};
+            return {...state, min: state.min +payload, max: state.max +payload};
         case SET_VALUE:
             return {...state, value: payload};
         case SET_RANGE:

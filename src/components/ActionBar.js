@@ -2,7 +2,7 @@ import React, { Fragment, useState } from 'react';
 import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
 import {InputBase, Paper, Button, Container, makeStyles} from '@material-ui/core';
-import {setRange} from '../actions';
+import {setRange, getData} from '../actions';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -37,30 +37,27 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-const ActionBar = ({setRange}) => {
+const ActionBar = ({getData, setRange, genomeViewer: {min, max}}) => {
   const classes = useStyles();
-  const [from, setFrom] = useState(0);
-  const [to, setTo] = useState(from+10);
+  const [from, setFrom] = useState('');
+  const [to, setTo] = useState('');
 
   const handleChangeFrom = (e) => {
-    if(e.target.value > 0){
+    if(e.target.value != null){
       setFrom(e.target.value);
-    }else{
-      setFrom(0);
     }
   };
 
   const handleChangeTo = (e) => {
-    if(e.target.value > from+10){
+    if(e.target.value != null){
       setTo(e.target.value);
-    }else{
-      setTo(from+10);
     }
   };
 
   const handleClick = (e) => {
-    setRange({from, to});
-  };
+    setRange({from: parseInt(from), to: parseInt(to)});
+    getData();
+  }
 
   return(
     <Fragment>
@@ -93,7 +90,7 @@ const ActionBar = ({setRange}) => {
             value={to}
           />
         </Paper>
-        <Button variant="contained" color="primary" className={classes.button} onClick={handleClick}>
+        <Button variant="contained" color="primary" disabled={((to-from<10) || to === '' || from === '')} className={classes.button} onClick={handleClick}>
           Go
         </Button>
       </Container>
@@ -105,4 +102,8 @@ ActionBar.propTypes = {
   setRange: PropTypes.func.isRequired,
 };
 
-export default connect(null, {setRange})(ActionBar);
+const mapStateToProps = (state) => ({
+  genomeViewer: state.genomeViewer
+});
+
+export default connect(mapStateToProps, {getData, setRange})(ActionBar);

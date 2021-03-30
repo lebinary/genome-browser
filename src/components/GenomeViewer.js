@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import {zoomOut, zoomIn, setVal, moveLeft, moveRight, getData} from '../actions';
@@ -55,6 +55,10 @@ const useStyles = makeStyles((theme) => ({
 
 const GenomeViewer = ({getData, zoomIn, zoomOut, moveLeft, moveRight, genomeViewer:{min, max, value, data, reference}}) => {
     const classes = useStyles();
+    const [isDragging, setDragging] = useState(false);
+    const [clientX, setClientX] = useState(null);
+    const [moveRange, setMoveRange] = useState(0);
+    
     let ctx = null;
 
     const handleScroll = e => {
@@ -70,6 +74,34 @@ const GenomeViewer = ({getData, zoomIn, zoomOut, moveLeft, moveRight, genomeView
             }
         }
     }
+
+    const onMouseDown = e => {
+        setDragging(true);
+        setClientX(e.clientX);
+    };
+    
+    const onMouseUp = () => {
+        setDragging(false);
+    };
+    
+    const onMouseMove = e => {
+        if (isDragging === true) {
+            const range = max-min;
+            const widthRect = 2000 / range;
+
+            //move right
+            if(e.clientX < clientX){
+                setMoveRange(clientX - e.clientX);
+                console.log(Math.round(moveRange / widthRect));
+            }
+            //move left
+            else if(e.clientX > clientX){
+                setMoveRange(e.clientX - clientX);
+                console.log(Math.round(moveRange / widthRect));
+
+            }
+        }
+    };
 
     const handleDoubleClick = e => {
         alert('clicked');
@@ -176,10 +208,10 @@ const GenomeViewer = ({getData, zoomIn, zoomOut, moveLeft, moveRight, genomeView
 
     return(
         <div className={classes.root} onWheel={handleScroll}>
-            <div>
-
-            </div>
-            <Grid container className={classes.container} spacing={3}>
+            <Grid container className={classes.container} spacing={3} draggable="false"         
+                onMouseDown={onMouseDown}
+                onMouseUp={onMouseUp}
+                onMouseMove={onMouseMove}>
                 <Grid item xs={1}>
                     <Typography id="discrete-slider-small-steps" gutterBottom>
                         Reference
@@ -197,27 +229,23 @@ const GenomeViewer = ({getData, zoomIn, zoomOut, moveLeft, moveRight, genomeView
                     </Typography>
                 </Grid>
                 <Grid item xs={11} className={classes.scaleBar}>
-                    <Button className={classes.arrow} onClick={()=>moveLeftRight('left')} size="large" color="primary">
-                        <Arrow
-                            angle={-90}
-                            length={300}
-                            style={{
-                            width: '100%'
-                            }}
-                        />
-                    </Button>
+                    <Arrow
+                        angle={-90}
+                        length={300}
+                        style={{
+                        width: '45%'
+                        }}
+                    />
                     <Button size="medium" onDoubleClick={handleDoubleClick} color="primary">
                         {max-min} bp
                     </Button>
-                    <Button className={classes.arrow} onClick={()=>moveLeftRight('right')} size="large" color="primary">
-                        <Arrow
-                            angle={90}
-                            length={300}
-                            style={{
-                            width: '100%'
-                            }}
-                        />
-                    </Button>
+                    <Arrow
+                        angle={90}
+                        length={300}
+                        style={{
+                        width: '45%'
+                        }}
+                    />
                 </Grid>
                 {/* <Grid item xs={1}>
                     <Typography id="discrete-slider-small-steps" gutterBottom>
