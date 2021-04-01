@@ -1,7 +1,6 @@
 import {
     ZOOM_IN,
     ZOOM_OUT,
-    SET_VALUE,
     SET_RANGE,
     MOVE_LEFT,
     MOVE_RIGHT,
@@ -10,10 +9,9 @@ import {
 
 const initialState = {
     data: [],
-    reference: [],
-    min: 0,
-    max: 10,
-    value: 5,
+    reference: "",
+    min: 200000,
+    max: 200010,
 };
 
 const getRandomInt = (min, max) => {
@@ -21,8 +19,6 @@ const getRandomInt = (min, max) => {
     max = Math.floor(max);
     return Math.floor(Math.random() * (max - min + 1)) + min;
 };
-
-const letters = ["A", "T", "C", "G"];
 
 export default function(state = initialState, action) {
     const { type, payload } = action;
@@ -35,18 +31,16 @@ export default function(state = initialState, action) {
             return {...state, min: state.min -payload, max: state.max -payload};
         case MOVE_RIGHT:
             return {...state, min: state.min +payload, max: state.max +payload};
-        case SET_VALUE:
-            return {...state, value: payload};
         case SET_RANGE:
             return {...state, min: payload.from, max: payload.to};
         case GET_DATA:
             let data = [];
-            let reference = [];
+            // let reference = [];
             for(let i=0; i <= (state.max - state.min); i++){
                 data.push(getRandomInt(0, 65));
-                reference.push(letters[parseInt(getRandomInt(0,3))]);
+                // reference.push(letters[parseInt(getRandomInt(0,3))]);
             }
-            return {...state, data: data, reference: reference};
+            return {...state, data: data, reference: payload.seq};
         default:
             return state;
     }

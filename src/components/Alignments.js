@@ -45,6 +45,26 @@ const useStyles = makeStyles((theme) => ({
         display: 'flex',
         alignItems: 'center',
     },
+
+    '@global': {
+        '::-webkit-scrollbar': {
+            width: '2px'
+        },
+        
+        '::-webkit-scrollbar-track': {
+        background: '#f1f1f1',
+        borderRadius: '2px',
+        },
+
+        '::-webkit-scrollbar-thumb': {
+            background: '#888',
+        borderRadius: '2px',
+        },
+        
+        '::-webkit-scrollbar-thumb:hover': {
+        background: '#add8e6', 
+        }
+    }
 }));
 
 const getRandomInt = (min, max) => {
@@ -72,8 +92,10 @@ const Alignments = ({data, genomeViewer:{min, max}}) => {
 
     const drawAlignments = () => {
         const alignments = [];
-        const lineWidth = 500 / 60;
+        const alignmentThickness = 500 / 60;
+        const indicatorWidth = 2000 / (max - min);
 
+        // Draw Alignments
         let y=0;
         for(let lineIndex=0; lineIndex < 60; lineIndex++){
             let i=0;
@@ -81,12 +103,16 @@ const Alignments = ({data, genomeViewer:{min, max}}) => {
             while(i < 2000){
                 const length = getRandomInt(50,300);
                 line.push({position: i, length: length});
-                drawLine({ x: i, y: y, x1: (i+length), y1: y}, {color: "#e6e6e4", width: lineWidth}, "round");
+                drawLine({ x: i, y: y, x1: (i+length), y1: y}, {color: "#e6e6e4", width: alignmentThickness}, "round");
                 i += (length + getRandomInt(10,100));
             }
             alignments.push(line);
-            y += lineWidth;
+            y += alignmentThickness;
         }
+
+        // Draw middle indicator
+        drawLine({x: 1000-(indicatorWidth/2), y: 500, x1: 1000-(indicatorWidth/2), y1: 0}, {color:"#000"}, "butt");
+        drawLine({x: 1000+(indicatorWidth/2), y: 500, x1: 1000+(indicatorWidth/2), y1: 0}, {color:"#000"}, "butt");
         return alignments;
     }
 

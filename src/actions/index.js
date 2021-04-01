@@ -1,7 +1,6 @@
 import {
     ZOOM_IN,
     ZOOM_OUT,
-    SET_VALUE,
     SET_RANGE,
     MOVE_LEFT,
     MOVE_RIGHT,
@@ -9,24 +8,16 @@ import {
 } from '../types';
 import axios from 'axios';
 
-export const zoomIn = (value) => (dispatch) => {
+
+export const zoomIn = () => (dispatch) => {
     dispatch({
         type: ZOOM_IN,
-        payload: value,
     });
 };
   
-export const zoomOut = (value) => (dispatch) => {
+export const zoomOut = () => (dispatch) => {
     dispatch({
         type: ZOOM_OUT,
-        payload: value,
-    });
-};
-
-export const setVal = (value) => (dispatch) => {
-    dispatch({
-        type: SET_VALUE,
-        payload: value,
     });
 };
 
@@ -51,8 +42,16 @@ export const moveRight = (moveRange) => (dispatch) => {
     });
 };
 
-export const getData = () => (dispatch) => {
-    dispatch({
-        type: GET_DATA,
-    });
+export const getData = (rangeObj) => async (dispatch) => {
+    const {min, max} = rangeObj;
+
+    try {
+        const res = await axios.get(`http://localhost:8000/api?region=chr1:${min}-${max+1}`);
+        dispatch({
+            type: GET_DATA,
+            payload: res.data,
+        });
+    }catch(err) {
+        console.log(err);
+    }
 };

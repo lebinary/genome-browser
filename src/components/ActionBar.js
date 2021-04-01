@@ -1,4 +1,4 @@
-import React, { Fragment, useState } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
 import {InputBase, Paper, Button, Container, makeStyles} from '@material-ui/core';
@@ -56,8 +56,11 @@ const ActionBar = ({getData, setRange, genomeViewer: {min, max}}) => {
 
   const handleClick = (e) => {
     setRange({from: parseInt(from), to: parseInt(to)});
-    getData();
   }
+
+  useEffect(() => {
+    getData({min, max});
+  }, []);
 
   return(
     <Fragment>

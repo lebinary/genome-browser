@@ -57,7 +57,7 @@ const Coverage = ({data, genomeViewer:{min, max}}) => {
         ctx.clearRect(0, 0, coverageCanvas.width, coverageCanvas.height);
         drawCoverage(data);
 
-    }, [min, max]);
+    }, [data]);
 
     return(
     <Fragment>
