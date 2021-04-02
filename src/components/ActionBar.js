@@ -39,23 +39,23 @@ const useStyles = makeStyles((theme) => ({
 
 const ActionBar = ({getData, setRange, genomeViewer: {min, max}}) => {
   const classes = useStyles();
-  const [from, setFrom] = useState('');
-  const [to, setTo] = useState('');
+  const [pos1, setPos1] = useState('');
+  const [pos2, setPos2] = useState('');
 
   const handleChangeFrom = (e) => {
     if(e.target.value != null){
-      setFrom(e.target.value);
+      setPos1(e.target.value);
     }
   };
 
   const handleChangeTo = (e) => {
     if(e.target.value != null){
-      setTo(e.target.value);
+      setPos2(e.target.value);
     }
   };
 
   const handleClick = (e) => {
-    setRange({from: parseInt(from), to: parseInt(to)});
+    setRange({pos1: parseInt(pos1), pos2: parseInt(pos2)});
   }
 
   useEffect(() => {
@@ -77,23 +77,23 @@ const ActionBar = ({getData, setRange, genomeViewer: {min, max}}) => {
         <Paper component="form" className={classes.paper}>
           <InputBase
             className={classes.input}
-            placeholder="From"
+            placeholder={min}
             type="number"
             onChange={handleChangeFrom}
-            value={from}
+            value={pos1}
           />
           
           :
 
           <InputBase
             className={classes.input}
-            placeholder="To"
+            placeholder={max}
             type="number"
             onChange={handleChangeTo}
-            value={to}
+            value={pos2}
           />
         </Paper>
-        <Button variant="contained" color="primary" disabled={((to-from<10) || to === '' || from === '')} className={classes.button} onClick={handleClick}>
+        <Button variant="contained" color="primary" disabled={((pos2-pos1<10) || pos2 === '' || pos1 === '')} className={classes.button} onClick={handleClick}>
           Go
         </Button>
       </Container>

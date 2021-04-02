@@ -32,7 +32,7 @@ export default function(state = initialState, action) {
         case MOVE_RIGHT:
             return {...state, min: state.min +payload, max: state.max +payload};
         case SET_RANGE:
-            return {...state, min: payload.from, max: payload.to};
+            return {...state, min: payload.pos1, max: payload.pos2};
         case GET_DATA:
             let data = [];
             // let reference = [];

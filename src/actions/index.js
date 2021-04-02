@@ -46,7 +46,7 @@ export const getData = (rangeObj) => async (dispatch) => {
     const {min, max} = rangeObj;
 
     try {
-        const res = await axios.get(`http://localhost:8000/api?region=chr1:${min}-${max+1}`);
+        const res = await axios.get(`http://${window.location.hostname}:8000/api?region=chr1:${min}-${max+1}`);
         dispatch({
             type: GET_DATA,
             payload: res.data,

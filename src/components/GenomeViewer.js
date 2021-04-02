@@ -2,8 +2,7 @@ import React, {useEffect, useMemo, useState} from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import {zoomOut, zoomIn, moveLeft, moveRight, getData} from '../actions';
-import {Typography, Grid, Button, makeStyles } from '@material-ui/core';
-import Arrow from '@elsdoerfer/react-arrow';
+import {Typography, Grid, makeStyles } from '@material-ui/core';
 import _ from 'lodash';
 
 import Gene from './Gene';
@@ -122,7 +121,6 @@ const drawReference = (ctx, reference) => {
             }
         }
     }else{
-
         let i = Math.ceil(splittedRef.length/2);
         let j = i - 1;
         
@@ -149,14 +147,16 @@ const GenomeViewer = ({getData, zoomIn, zoomOut, moveLeft, moveRight, genomeView
     const [clientX, setClientX] = useState(null);
     let ctx = null;
 
-    const handleScroll = e => {
-        if (e.nativeEvent.wheelDelta > 0) {
+    const handleWheel = e => {
+        if (e.deltaY < 0) {
             if(max-min>10){
                 zoomIn();
+                console.log(e);
             }
         } else {
             if(max-min<1000000){
                 zoomOut();
+                console.log(e);
             }
         }
     }
@@ -172,13 +172,15 @@ const GenomeViewer = ({getData, zoomIn, zoomOut, moveLeft, moveRight, genomeView
     
     const onMouseMove = e => {
         if (isDragging === true) {
+            const canvasWidth = document.getElementById('reference').clientWidth;
+            const unitPixel = canvasWidth / (max-min);
             //move right
             if(e.clientX < clientX){
-                moveLeft(Math.round(clientX - e.clientX));
+                moveRight(Math.round((clientX - e.clientX)/unitPixel));
             }
             //move left
             else if(e.clientX > clientX){
-                moveRight(Math.round(e.clientX - clientX));
+                moveLeft(Math.round((e.clientX - clientX)/unitPixel));
             }
         }
     };
@@ -209,7 +211,7 @@ const GenomeViewer = ({getData, zoomIn, zoomOut, moveLeft, moveRight, genomeView
     }, [reference]);
 
     return(
-        <div className={classes.root} onWheel={handleScroll}>
+        <div className={classes.root} onWheel={handleWheel}>
             <Grid container className={classes.container} spacing={3} draggable="false"         
                 onMouseDown={onMouseDown}
                 onMouseUp={onMouseUp}
@@ -225,50 +227,6 @@ const GenomeViewer = ({getData, zoomIn, zoomOut, moveLeft, moveRight, genomeView
                         height: '100%',
                     }}></canvas>
                 </Grid>
-                <Grid item xs={1}>
-                    <Typography id="discrete-slider-small-steps" gutterBottom>
-                        Scale
-                    </Typography>
-                </Grid>
-                <Grid item xs={11} className={classes.scaleBar}>
-                    <Arrow
-                        angle={-90}
-                        length={300}
-                        style={{
-                        width: '45%'
-                        }}
-                    />
-                    <Button size="medium" color="primary">
-                        {max-min} bp
-                    </Button>
-                    <Arrow
-                        angle={90}
-                        length={300}
-                        style={{
-                        width: '45%'
-                        }}
-                    />
-                </Grid>
-                {/* <Grid item xs={1}>
-                    <Typography id="discrete-slider-small-steps" gutterBottom>
-                        Position
-                    </Typography>
-                </Grid>
-                <Grid item xs={11} className={classes.scaleBar}>
-                    <Divider
-                        style={{
-                        width: '45%'
-                        }}
-                    />
-                    <Button size="medium" onDoubleClick={handleDoubleClick} color="primary">
-                        {(max + min)/2} bp
-                    </Button>
-                    <Divider
-                        style={{
-                        width: '45%'
-                        }}
-                    />
-                </Grid> */}
                 <Gene />
                 <Coverage data={data} />
                 <Alignments data={data}/>
