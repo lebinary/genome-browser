@@ -1,5 +1,6 @@
 import ActionBar from './components/ActionBar';
 import GenomeViewer from './components/GenomeViewer';
+import 'fontsource-roboto';
 
 //Redux
 import { Provider } from 'react-redux';

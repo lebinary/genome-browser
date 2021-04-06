@@ -45,6 +45,11 @@ const useStyles = makeStyles((theme) => ({
         display: 'flex',
         alignItems: 'center',
     },
+    label: {
+        padding: '1em 0 0 0',
+        fontSize: "14px",
+        fontWeight: "bold",
+    },
 
     '@global': {
         '::-webkit-scrollbar': {
@@ -135,8 +140,8 @@ const Alignments = ({data, genomeViewer:{min, max}}) => {
     return(
     <Fragment>
         <Grid item xs={1}>
-            <Typography id="discrete-slider-small-steps" gutterBottom>
-                Alignments
+            <Typography id="subtitle1" className={classes.label}>
+                ALIGNMENTS
             </Typography>
         </Grid>
         <Grid item xs={11} className={classes.alignments}>

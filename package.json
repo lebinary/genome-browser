@@ -12,6 +12,7 @@
     "axios": "^0.21.1",
     "biojs-vis-exon-intron-map": "^2.1.2",
     "chart.js": "^2.9.4",
+    "fontsource-roboto": "^4.0.0",
     "lodash": "^4.17.21",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",

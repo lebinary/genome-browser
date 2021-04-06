@@ -1,12 +1,19 @@
-import React, { Fragment, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
-import {InputBase, Paper, Button, Container, makeStyles} from '@material-ui/core';
+import {InputBase, Paper, Button, Typography, makeStyles} from '@material-ui/core';
 import {setRange, getData} from '../actions';
+import mainLogo from '../img/vin_logo.png';
 
 const useStyles = makeStyles((theme) => ({
     root: {
       padding: '10px 30px',
+      display: 'flex',
+      justifyContent: 'space-between',
+      backgroundColor: "#E5E5E5",
+      height: "10%",
+    },
+    searchArea: {
       display: 'flex',
       alignItems: 'stretch',
     },
@@ -17,12 +24,9 @@ const useStyles = makeStyles((theme) => ({
       width: 200,
       color: "#19416D"
     },
-    paperLeft: {
-      margin: '0 10px 0 0',
+    range: {
       display: 'flex',
       alignItems: 'center',
-      width: 200,
-      color: "#19416D"
     },
     input: {
       marginLeft: theme.spacing(1),
@@ -32,8 +36,16 @@ const useStyles = makeStyles((theme) => ({
       padding: 10,
     },
     button: {
-      margin: '0px 10px',
+      textAlign: "center",
       backgroundColor: "#19416D",
+    },
+    titleArea: {
+      height: "100%",
+      position: "relative",
+    },
+    logo: {
+      display: "block",
+      width: "15%"
     }
 }));
 
@@ -56,6 +68,8 @@ const ActionBar = ({getData, setRange, genomeViewer: {min, max}}) => {
 
   const handleClick = (e) => {
     setRange({pos1: parseInt(pos1), pos2: parseInt(pos2)});
+    setPos1('');
+    setPos2('');
   }
 
   useEffect(() => {
@@ -63,41 +77,37 @@ const ActionBar = ({getData, setRange, genomeViewer: {min, max}}) => {
   }, []);
 
   return(
-    <Fragment>
-      <Container className={classes.root} maxWidth="100%">
-        {/* <Paper component="form" className={classes.paperLeft}>
-          <InputBase
-            className={classes.input}
-            placeholder="Search"
-          />
-          <IconButton type="submit" className={classes.iconButton} aria-label="search">
-            <SearchIcon />
-          </IconButton>
-        </Paper> */}
+    <div className={classes.root}>
+      <div className={classes.titleArea}>
+        <img src={mainLogo} className={classes.logo} alt="vinbigdata"/>
+      </div>
+      <div className={classes.searchArea}>
         <Paper component="form" className={classes.paper}>
-          <InputBase
-            className={classes.input}
-            placeholder={min}
-            type="number"
-            onChange={handleChangeFrom}
-            value={pos1}
-          />
-          
-          :
+          <Typography variant="body2" className={classes.range}>
+            <InputBase
+              className={classes.input}
+              placeholder={min}
+              type="number"
+              onChange={handleChangeFrom}
+              value={pos1}
+            />
+            
+            :
 
-          <InputBase
-            className={classes.input}
-            placeholder={max}
-            type="number"
-            onChange={handleChangeTo}
-            value={pos2}
-          />
+            <InputBase
+              className={classes.input}
+              placeholder={max}
+              type="number"
+              onChange={handleChangeTo}
+              value={pos2}
+            />
+          </Typography>
         </Paper>
         <Button variant="contained" color="primary" disabled={((pos2-pos1<10) || pos2 === '' || pos1 === '')} className={classes.button} onClick={handleClick}>
-          Go
+            GO
         </Button>
-      </Container>
-    </Fragment>
+      </div>
+    </div>
   );
 };
 

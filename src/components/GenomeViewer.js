@@ -2,7 +2,7 @@ import React, {useEffect, useMemo, useState} from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import {zoomOut, zoomIn, moveLeft, moveRight, getData} from '../actions';
-import {Typography, Grid, makeStyles } from '@material-ui/core';
+import {Typography, Grid, makeStyles, Container } from '@material-ui/core';
 import _ from 'lodash';
 
 import Gene from './Gene';
@@ -11,7 +11,6 @@ import Alignments from './Alignments';
 
 const useStyles = makeStyles((theme) => ({
     root: {
-        flexGrow: 1,
     },
     container: {
         padding: '0 30px',
@@ -22,7 +21,8 @@ const useStyles = makeStyles((theme) => ({
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
-        maxHeight: '15%',
+        maxHeight: '50px',
+        width: '100%'
     },
     scaleBar: {
         display: 'flex',
@@ -50,6 +50,11 @@ const useStyles = makeStyles((theme) => ({
     locationBar: {
         display: 'flex',
         alignItems: 'center',
+    },
+    label: {
+        padding: '1em 0',
+        fontSize: "14px",
+        fontWeight: "bold",
     },
 }));
 
@@ -87,11 +92,16 @@ const drawLine = (ctx, info, style, lineCap = {}) => {
     ctx.stroke();
 }
 
-const drawLetter = (ctx, letter, info = {}) => {
+const drawLetter = (ctx, letter, info = {}, width) => {
     const { x, y } = info;
+
+    //Draw background
+    let color = selectColor(letter);
+    drawLine(ctx, {x: x, y: y+3, x1: x, y1: y-27}, {width: width, color: color}, "butt")
+
     ctx.beginPath();
-    ctx.font="30px Arial";
-    ctx.fillStyle = selectColor(letter);
+    ctx.font='bold 30px Roboto';
+    ctx.fillStyle = "#fff";
     ctx.textAlign = "center";
     ctx.fillText(letter, x, y);
     ctx.closePath();
@@ -111,11 +121,11 @@ const drawReference = (ctx, reference) => {
         
         while (j >= 0)
         {
-            drawLetter(ctx, splittedRef[j], {x: l, y: 50});
+            drawLetter(ctx, splittedRef[j], {x: l, y: 41}, widthRect);
             j --;
             l -= widthRect;
             if (i < splittedRef.length) {
-                drawLetter(ctx, splittedRef[i], {x: r , y: 50});
+                drawLetter(ctx, splittedRef[i], {x: r , y: 41}, widthRect);
                 i ++;
                 r += widthRect;
             }
@@ -127,12 +137,12 @@ const drawReference = (ctx, reference) => {
         while (j >= 0)
         {
             let color = selectColor(splittedRef[j]);
-            drawLine(ctx, {x: l, y: 50, x1: l, y1: 20}, {width: widthRect, color: color}, "butt")
+            drawLine(ctx, {x: l, y: 45, x1: l, y1: 15}, {width: widthRect, color: color}, "butt")
             j --;
             l -= widthRect;
             if (i < splittedRef.length) {
                 let color = selectColor(splittedRef[i]);
-                drawLine(ctx, {x: r, y: 50, x1: r, y1: 20}, {width: widthRect, color: color}, "butt")
+                drawLine(ctx, {x: r, y: 45, x1: r, y1: 15}, {width: widthRect, color: color}, "butt")
                 i ++;
                 r += widthRect;
             }
@@ -212,13 +222,13 @@ const GenomeViewer = ({getData, zoomIn, zoomOut, moveLeft, moveRight, genomeView
 
     return(
         <div className={classes.root} onWheel={handleWheel}>
-            <Grid container className={classes.container} spacing={3} draggable="false"         
+            <Grid container className={classes.container} spacing={1} draggable="false"         
                 onMouseDown={onMouseDown}
                 onMouseUp={onMouseUp}
                 onMouseMove={onMouseMove}>
                 <Grid item xs={1}>
-                    <Typography id="discrete-slider-small-steps" gutterBottom>
-                        Reference
+                    <Typography variant="subtitle1" className={classes.label}>
+                        REFERENCE
                     </Typography>
                 </Grid>
                 <Grid className={classes.reference} item xs={11}>

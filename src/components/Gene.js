@@ -2,6 +2,7 @@ import React, {useEffect, Fragment} from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import {Typography, Grid, makeStyles } from '@material-ui/core';
+import 'fontsource-roboto';
 
 const useStyles = makeStyles((theme) => ({
     geneBar: {
@@ -9,6 +10,11 @@ const useStyles = makeStyles((theme) => ({
         alignItems: 'center',
         justifyContent: 'space-between',
         maxHeight: '50px',
+    },
+    label: {
+        padding: '1em 0',
+        fontSize: "14px",
+        fontWeight: "bold",
     },
 }));
 
@@ -104,7 +110,7 @@ const Gene = ({genomeViewer:{min, max}}) => {
                 x1 = 2000;
             }
 
-            drawLine({ x: x, y: 60, x1: x1, y1: 60}, { width: type==="exon"?130:10, color: "#e6e6e4" }, "butt");
+            drawLine({ x: x, y: 60, x1: x1, y1: 60}, {width: type==="exon"?130:10, color: "#e6e6e4"}, "butt");
         }
     }
 
@@ -129,8 +135,8 @@ const Gene = ({genomeViewer:{min, max}}) => {
     return(
         <Fragment>
             <Grid item xs={1}>
-                <Typography id="discrete-slider-small-steps" gutterBottom>
-                    Genes
+                <Typography id="h1" className={classes.label}>
+                    GENES
                 </Typography>
             </Grid>
             <Grid item xs={11} className={classes.geneBar}>

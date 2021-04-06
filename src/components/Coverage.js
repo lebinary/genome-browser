@@ -11,6 +11,11 @@ const useStyles = makeStyles((theme) => ({
         maxHeight: '50px',
         width: '100%'
     },
+    label: {
+        padding: '1em 0',
+        fontSize: "14px",
+        fontWeight: "bold",
+    },
 }));
 
 const Coverage = ({data, genomeViewer:{min, max}}) => {
@@ -62,8 +67,8 @@ const Coverage = ({data, genomeViewer:{min, max}}) => {
     return(
     <Fragment>
         <Grid item xs={1}>
-            <Typography id="discrete-slider-small-steps" gutterBottom>
-                Coverage
+            <Typography id="subtitle1" className={classes.label}>
+                COVERAGE
             </Typography>
         </Grid>
         <Grid item xs={11} className={classes.coverage}>
