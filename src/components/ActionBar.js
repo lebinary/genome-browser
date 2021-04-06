@@ -1,7 +1,20 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
-import {InputBase, Paper, Button, Typography, makeStyles} from '@material-ui/core';
+import {
+  InputBase, 
+  Paper, 
+  Button, 
+  Typography, 
+  makeStyles, 
+  Select, 
+  Dialog, 
+  DialogActions, 
+  DialogContent, 
+  DialogTitle, 
+  FormControl,
+  MenuItem,
+} from '@material-ui/core';
 import {setRange, getData} from '../actions';
 import mainLogo from '../img/vin_logo.png';
 
@@ -29,23 +42,36 @@ const useStyles = makeStyles((theme) => ({
       alignItems: 'center',
     },
     input: {
-      marginLeft: theme.spacing(1),
+      fontSize: "14px",
+      marginLeft: "1em",
       flex: 1,
     },
-    iconButton: {
-      padding: 10,
+    container: {
+      display: 'flex',
+      flexWrap: 'wrap',
+    },
+    formControl: {
+      margin: theme.spacing(1),
+      minWidth: 120,
     },
     button: {
+      fontSize: "14px",
       textAlign: "center",
       backgroundColor: "#19416D",
     },
     titleArea: {
       height: "100%",
       position: "relative",
+      display: 'flex',
+      alignItems: 'stretch',
     },
     logo: {
       display: "block",
       width: "15%"
+    },
+    header: {
+      fontSize: "19px",
+      fontWeight: "bold",
     }
 }));
 
@@ -53,6 +79,26 @@ const ActionBar = ({getData, setRange, genomeViewer: {min, max}}) => {
   const classes = useStyles();
   const [pos1, setPos1] = useState('');
   const [pos2, setPos2] = useState('');
+  const [header, setHeader] = useState('');
+  const [open, setOpen] = useState(false);
+  const [selectVal, setSelectVal] = useState('');
+
+  const handleChangeSelectVal = (e) => {
+    setSelectVal(e.target.value);
+  };
+
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+  const changeReference = () => {
+    setOpen(false);
+    setHeader(selectVal);
+  };
 
   const handleChangeFrom = (e) => {
     if(e.target.value != null){
@@ -80,6 +126,31 @@ const ActionBar = ({getData, setRange, genomeViewer: {min, max}}) => {
     <div className={classes.root}>
       <div className={classes.titleArea}>
         <img src={mainLogo} className={classes.logo} alt="vinbigdata"/>
+        <Button onClick={handleClickOpen} className={classes.header}>{header}</Button>
+        <Dialog disableBackdropClick disableEscapeKeyDown open={open} onClose={handleClose}>
+        <DialogTitle>Choose Reference</DialogTitle>
+        <DialogContent>
+          <FormControl className={classes.formControl}>
+            <Select
+              defaultValue={header}
+              value={selectVal}
+              onChange={handleChangeSelectVal}
+            >
+              <MenuItem value={"Chr1"}>Chr1</MenuItem>
+              <MenuItem value={"Chr2"}>Chr2</MenuItem>
+              <MenuItem value={"Chr3"}>Chr3</MenuItem>
+            </Select>
+          </FormControl>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={changeReference} color="primary">
+            Ok
+          </Button>
+        </DialogActions>
+      </Dialog>
       </div>
       <div className={classes.searchArea}>
         <Paper component="form" className={classes.paper}>
