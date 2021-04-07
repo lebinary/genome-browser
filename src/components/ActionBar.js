@@ -5,18 +5,19 @@ import {
   InputBase, 
   Paper, 
   Button, 
-  Typography, 
-  makeStyles, 
-  Select, 
+  makeStyles,
   Dialog, 
   DialogActions, 
   DialogContent, 
   DialogTitle, 
   FormControl,
-  MenuItem,
+  TextField,
+  ListSubheader,
 } from '@material-ui/core';
-import {setRange, getData} from '../actions';
+import {setRange, getData, getHeaders} from '../actions';
 import mainLogo from '../img/vin_logo.png';
+import {Autocomplete} from '@material-ui/lab';
+import ListboxComponent from '../utils/ListboxComponent';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -29,6 +30,7 @@ const useStyles = makeStyles((theme) => ({
     searchArea: {
       display: 'flex',
       alignItems: 'stretch',
+      padding: "0 0.5em",
     },
     paper: {
       margin: '0 10px',
@@ -46,10 +48,6 @@ const useStyles = makeStyles((theme) => ({
       marginLeft: "1em",
       flex: 1,
     },
-    container: {
-      display: 'flex',
-      flexWrap: 'wrap',
-    },
     formControl: {
       margin: theme.spacing(1),
       minWidth: 120,
@@ -60,6 +58,7 @@ const useStyles = makeStyles((theme) => ({
       backgroundColor: "#19416D",
     },
     titleArea: {
+      width: "26%",
       height: "100%",
       position: "relative",
       display: 'flex',
@@ -69,22 +68,31 @@ const useStyles = makeStyles((theme) => ({
       display: "block",
       width: "15%"
     },
-    header: {
+    title: {
+      position: "absolute",
+      left: "15%",
+      height: "100%",
       fontSize: "19px",
       fontWeight: "bold",
     }
 }));
 
-const ActionBar = ({getData, setRange, genomeViewer: {min, max}}) => {
+const renderGroup = (params) => [
+  <ListSubheader key={params.key} component="div">
+    {params.group}
+  </ListSubheader>,
+  params.children,
+];
+
+const ActionBar = ({getData, getHeaders, setRange, genomeViewer: {min, max, headers, title}}) => {
   const classes = useStyles();
   const [pos1, setPos1] = useState('');
   const [pos2, setPos2] = useState('');
-  const [header, setHeader] = useState('');
   const [open, setOpen] = useState(false);
-  const [selectVal, setSelectVal] = useState('');
+  const [newRef, setNewRef] = useState('');
 
-  const handleChangeSelectVal = (e) => {
-    setSelectVal(e.target.value);
+  const handleNewReference = (e) => {
+    setNewRef(e.target.textContent);
   };
 
   const handleClickOpen = () => {
@@ -97,7 +105,7 @@ const ActionBar = ({getData, setRange, genomeViewer: {min, max}}) => {
 
   const changeReference = () => {
     setOpen(false);
-    setHeader(selectVal);
+    getData(newRef, {min, max});
   };
 
   const handleChangeFrom = (e) => {
@@ -119,27 +127,31 @@ const ActionBar = ({getData, setRange, genomeViewer: {min, max}}) => {
   }
 
   useEffect(() => {
-    getData({min, max});
+    getHeaders();
+    getData(title, {min, max});
   }, []);
 
   return(
     <div className={classes.root}>
       <div className={classes.titleArea}>
         <img src={mainLogo} className={classes.logo} alt="vinbigdata"/>
-        <Button onClick={handleClickOpen} className={classes.header}>{header}</Button>
+        <Button onClick={handleClickOpen} className={classes.title}>{title}</Button>
         <Dialog disableBackdropClick disableEscapeKeyDown open={open} onClose={handleClose}>
-        <DialogTitle>Choose Reference</DialogTitle>
+        <DialogTitle>CHOOSE REFERENCE</DialogTitle>
         <DialogContent>
           <FormControl className={classes.formControl}>
-            <Select
-              defaultValue={header}
-              value={selectVal}
-              onChange={handleChangeSelectVal}
-            >
-              <MenuItem value={"Chr1"}>Chr1</MenuItem>
-              <MenuItem value={"Chr2"}>Chr2</MenuItem>
-              <MenuItem value={"Chr3"}>Chr3</MenuItem>
-            </Select>
+            <Autocomplete
+              onChange={handleNewReference}
+              value={newRef}
+              style={{ width: 300 }}
+              disableListWrap
+              ListboxComponent={ListboxComponent}
+              renderGroup={renderGroup}
+              options={headers}
+              groupBy={(option) => option[0].toUpperCase()}
+              renderInput={(params) => <TextField {...params} variant="outlined" label="Reference" />}
+              renderOption={(option) => <p>{option}</p>}
+            />
           </FormControl>
         </DialogContent>
         <DialogActions>
@@ -147,35 +159,34 @@ const ActionBar = ({getData, setRange, genomeViewer: {min, max}}) => {
             Cancel
           </Button>
           <Button onClick={changeReference} color="primary">
-            Ok
+            Change
           </Button>
         </DialogActions>
       </Dialog>
       </div>
       <div className={classes.searchArea}>
         <Paper component="form" className={classes.paper}>
-          <Typography variant="body2" className={classes.range}>
-            <InputBase
-              className={classes.input}
-              placeholder={min}
-              type="number"
-              onChange={handleChangeFrom}
-              value={pos1}
-            />
-            
-            :
+          <InputBase
+            className={classes.input}
+            placeholder={min.toString()}
+            type="number"
+            onChange={handleChangeFrom}
+            value={pos1}
+          />
+          
+          :
 
-            <InputBase
-              className={classes.input}
-              placeholder={max}
-              type="number"
-              onChange={handleChangeTo}
-              value={pos2}
-            />
-          </Typography>
+          <InputBase
+            className={classes.input}
+            placeholder={max.toString()}
+            disableListWrap
+            type="number"
+            onChange={handleChangeTo}
+            value={pos2}
+          />
         </Paper>
         <Button variant="contained" color="primary" disabled={((pos2-pos1<10) || pos2 === '' || pos1 === '')} className={classes.button} onClick={handleClick}>
-            GO
+          GO
         </Button>
       </div>
     </div>
@@ -190,4 +201,4 @@ const mapStateToProps = (state) => ({
   genomeViewer: state.genomeViewer
 });
 
-export default connect(mapStateToProps, {getData, setRange})(ActionBar);
+export default connect(mapStateToProps, {getData, getHeaders, setRange})(ActionBar);

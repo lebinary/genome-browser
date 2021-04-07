@@ -1,7 +1,7 @@
 import React, {useEffect, Fragment} from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import {Typography, Grid, makeStyles } from '@material-ui/core';
+import { Grid, makeStyles } from '@material-ui/core';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -140,9 +140,7 @@ const Alignments = ({data, genomeViewer:{min, max}}) => {
     return(
     <Fragment>
         <Grid item xs={1}>
-            <Typography id="subtitle1" className={classes.label}>
-                ALIGNMENTS
-            </Typography>
+            <p className={classes.label}>ALIGNMENTS</p>
         </Grid>
         <Grid item xs={11} className={classes.alignments}>
             <canvas id="alignments" width="2000" height="500" onClick={(e) => showCordinate(e, "alignments")} style={{

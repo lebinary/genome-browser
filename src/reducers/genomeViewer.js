@@ -5,9 +5,12 @@ import {
     MOVE_LEFT,
     MOVE_RIGHT,
     GET_DATA,
+    GET_HEADERS,
 } from '../types';
 
 const initialState = {
+    title: "chr1",
+    headers: [],
     data: [],
     reference: "",
     min: 200000,
@@ -33,6 +36,8 @@ export default function(state = initialState, action) {
             return {...state, min: state.min +payload, max: state.max +payload};
         case SET_RANGE:
             return {...state, min: payload.pos1, max: payload.pos2};
+        case GET_HEADERS:
+            return {...state, headers: payload.headers};
         case GET_DATA:
             let data = [];
             // let reference = [];
@@ -40,7 +45,7 @@ export default function(state = initialState, action) {
                 data.push(getRandomInt(0, 65));
                 // reference.push(letters[parseInt(getRandomInt(0,3))]);
             }
-            return {...state, data: data, reference: payload.seq};
+            return {...state, data: data, reference: payload.seq, title: payload.header};
         default:
             return state;
     }

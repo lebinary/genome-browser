@@ -5,6 +5,7 @@ import {
     MOVE_LEFT,
     MOVE_RIGHT,
     GET_DATA,
+    GET_HEADERS,
 } from '../types';
 import axios from 'axios';
 
@@ -42,13 +43,26 @@ export const moveRight = (moveRange) => (dispatch) => {
     });
 };
 
-export const getData = (rangeObj) => async (dispatch) => {
+export const getData = (title, rangeObj) => async (dispatch) => {
     const {min, max} = rangeObj;
 
     try {
-        const res = await axios.get(`http://${window.location.hostname}:8000/api?region=chr1:${min}-${max+1}`);
+        const res = await axios.get(`http://${window.location.hostname}:8000/api?region=${title}:${min}-${max+1}`);
         dispatch({
             type: GET_DATA,
+            payload: {...res.data, min, max},
+        });
+    }catch(err) {
+        console.log(err);
+    }
+};
+
+export const getHeaders = () => async (dispatch) => {
+
+    try {
+        const res = await axios.get(`http://${window.location.hostname}:8000/api?headers`);
+        dispatch({
+            type: GET_HEADERS,
             payload: res.data,
         });
     }catch(err) {

@@ -1,7 +1,7 @@
 import React, {useEffect, Fragment} from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import {Typography, Grid, makeStyles } from '@material-ui/core';
+import { Grid, makeStyles } from '@material-ui/core';
 import 'fontsource-roboto';
 
 const useStyles = makeStyles((theme) => ({
@@ -135,9 +135,7 @@ const Gene = ({genomeViewer:{min, max}}) => {
     return(
         <Fragment>
             <Grid item xs={1}>
-                <Typography id="h1" className={classes.label}>
-                    GENES
-                </Typography>
+                <p className={classes.label}>GENES</p>
             </Grid>
             <Grid item xs={11} className={classes.geneBar}>
                 <canvas id="genes" width="2000" height="150" style={{

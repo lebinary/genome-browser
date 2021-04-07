@@ -6,3 +6,4 @@ export const SIGN_IN = 'SIGN_IN';
 export const MOVE_LEFT = 'MOVE_LEFT';
 export const MOVE_RIGHT = 'MOVE_RIGHT';
 export const GET_DATA = 'GET_DATA';
+export const GET_HEADERS = 'GET_HEADERS';

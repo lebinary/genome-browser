@@ -1,7 +1,7 @@
 import React, {useEffect, Fragment} from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import {Typography, Grid, makeStyles } from '@material-ui/core';
+import {Grid, makeStyles } from '@material-ui/core';
 
 const useStyles = makeStyles((theme) => ({
     coverage: {
@@ -67,9 +67,7 @@ const Coverage = ({data, genomeViewer:{min, max}}) => {
     return(
     <Fragment>
         <Grid item xs={1}>
-            <Typography id="subtitle1" className={classes.label}>
-                COVERAGE
-            </Typography>
+            <p className={classes.label}>COVERAGE</p>
         </Grid>
         <Grid item xs={11} className={classes.coverage}>
             <canvas id="coverage" width="2000" height="150" onClick={(e) => showCordinate(e, "coverage")} style={{

@@ -2,7 +2,7 @@ import React, {useEffect, useMemo, useState} from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import {zoomOut, zoomIn, moveLeft, moveRight, getData} from '../actions';
-import {Typography, Grid, makeStyles, Container } from '@material-ui/core';
+import {Grid, makeStyles } from '@material-ui/core';
 import _ from 'lodash';
 
 import Gene from './Gene';
@@ -11,8 +11,6 @@ import Alignments from './Alignments';
 
 const useStyles = makeStyles((theme) => ({
     root: {
-    },
-    container: {
         padding: '0 30px',
         height: '80vh',
         width: '100vw',
@@ -150,8 +148,7 @@ const drawReference = (ctx, reference) => {
     }
 }
 
-
-const GenomeViewer = ({getData, zoomIn, zoomOut, moveLeft, moveRight, genomeViewer:{min, max, data, reference}}) => {
+const GenomeViewer = ({getData, zoomIn, zoomOut, moveLeft, moveRight, genomeViewer:{min, max, data, reference, title}}) => {
     const classes = useStyles();
     const [isDragging, setDragging] = useState(false);
     const [clientX, setClientX] = useState(null);
@@ -161,12 +158,10 @@ const GenomeViewer = ({getData, zoomIn, zoomOut, moveLeft, moveRight, genomeView
         if (e.deltaY < 0) {
             if(max-min>10){
                 zoomIn();
-                console.log(e);
             }
         } else {
             if(max-min<1000000){
                 zoomOut();
-                console.log(e);
             }
         }
     }
@@ -206,7 +201,7 @@ const GenomeViewer = ({getData, zoomIn, zoomOut, moveLeft, moveRight, genomeView
 
     useEffect(() => {
         const bounceGetData = _.debounce(() => {
-            getData({min, max});
+            getData(title, {min, max});
         }, 350);
         bounceGetData();
     }, [min,max]);
@@ -221,27 +216,23 @@ const GenomeViewer = ({getData, zoomIn, zoomOut, moveLeft, moveRight, genomeView
     }, [reference]);
 
     return(
-        <div className={classes.root} onWheel={handleWheel}>
-            <Grid container className={classes.container} spacing={1} draggable="false"         
-                onMouseDown={onMouseDown}
-                onMouseUp={onMouseUp}
-                onMouseMove={onMouseMove}>
-                <Grid item xs={1}>
-                    <Typography variant="subtitle1" className={classes.label}>
-                        REFERENCE
-                    </Typography>
-                </Grid>
-                <Grid className={classes.reference} item xs={11}>
-                    <canvas id="reference" width="2000" height="50" onClick={(e) => showCordinate(e, "reference")} style={{
-                        width: '100%',
-                        height: '100%',
-                    }}></canvas>
-                </Grid>
-                <Gene />
-                <Coverage data={data} />
-                <Alignments data={data}/>
+        <Grid container className={classes.root} onWheel={handleWheel} spacing={1} draggable="false"         
+            onMouseDown={onMouseDown}
+            onMouseUp={onMouseUp}
+            onMouseMove={onMouseMove}>
+            <Grid item xs={1}>
+                <p className={classes.label}>REFERENCE</p>
             </Grid>
-        </div>
+            <Grid className={classes.reference} item xs={11}>
+                <canvas id="reference" width="2000" height="50" onClick={(e) => showCordinate(e, "reference")} style={{
+                    width: '100%',
+                    height: '100%',
+                }}></canvas>
+            </Grid>
+            <Gene />
+            <Coverage data={data} />
+            <Alignments data={data}/>
+        </Grid>
     );
 };
 
