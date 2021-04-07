@@ -185,7 +185,10 @@ const ActionBar = ({getData, getHeaders, setRange, genomeViewer: {min, max, head
             value={pos2}
           />
         </Paper>
-        <Button variant="contained" color="primary" disabled={((pos2-pos1<10) || pos2 === '' || pos1 === '')} className={classes.button} onClick={handleClick}>
+        <Button variant="contained" color="primary" 
+        disabled={((pos2-pos1<10) || pos2 === '' || (pos1 === '' && pos1 > 0))}
+        className={classes.button} 
+        onClick={handleClick}>
           GO
         </Button>
       </div>

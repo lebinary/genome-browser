@@ -29,7 +29,7 @@ export default function(state = initialState, action) {
         case ZOOM_IN:
             return {...state, min: state.min +2, max: state.max -2};
         case ZOOM_OUT:
-            return {...state, min: state.min>0? state.min -2: state.min, max: state.max<3000000000? state.max +2 : state.max};
+            return {...state, min: state.min>1? state.min -2: state.min, max: state.max<3000000000? state.max +2 : state.max};
         case MOVE_LEFT:
             return {...state, min: state.min -payload, max: state.max -payload};
         case MOVE_RIGHT:
