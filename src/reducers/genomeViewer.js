@@ -6,6 +6,8 @@ import {
     MOVE_RIGHT,
     GET_DATA,
     GET_HEADERS,
+    ERROR,
+    CLOSE_ERROR,
 } from '../types';
 
 const initialState = {
@@ -15,6 +17,8 @@ const initialState = {
     reference: "",
     min: 200000,
     max: 200010,
+    error: false,
+    errorMessgae: "",
 };
 
 const getRandomInt = (min, max) => {
@@ -46,6 +50,10 @@ export default function(state = initialState, action) {
                 // reference.push(letters[parseInt(getRandomInt(0,3))]);
             }
             return {...state, data: data, reference: payload.seq, title: payload.header};
+        case ERROR:
+            return {...state, error: true, errorMessgae: payload.message};
+        case CLOSE_ERROR:
+            return {...state, error: false, errorMessgae: ""};
         default:
             return state;
     }

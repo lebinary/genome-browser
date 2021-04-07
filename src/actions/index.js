@@ -6,6 +6,8 @@ import {
     MOVE_RIGHT,
     GET_DATA,
     GET_HEADERS,
+    ERROR,
+    CLOSE_ERROR,
 } from '../types';
 import axios from 'axios';
 
@@ -43,6 +45,12 @@ export const moveRight = (moveRange) => (dispatch) => {
     });
 };
 
+export const closeError = () => (dispatch) => {
+    dispatch({
+        type: CLOSE_ERROR,
+    });
+};
+
 export const getData = (title, rangeObj) => async (dispatch) => {
     const {min, max} = rangeObj;
 
@@ -53,7 +61,10 @@ export const getData = (title, rangeObj) => async (dispatch) => {
             payload: {...res.data, min, max},
         });
     }catch(err) {
-        console.log(err);
+        dispatch({
+            type: ERROR,
+            payload: err,
+        });
     }
 };
 
@@ -66,6 +77,9 @@ export const getHeaders = () => async (dispatch) => {
             payload: res.data,
         });
     }catch(err) {
-        console.log(err);
+        dispatch({
+            type: ERROR,
+            payload: err,
+        });
     }
 };

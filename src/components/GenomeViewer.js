@@ -1,4 +1,4 @@
-import React, {useEffect, useMemo, useState} from 'react';
+import React, {Fragment, useEffect, useMemo, useState} from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import {zoomOut, zoomIn, moveLeft, moveRight, getData} from '../actions';
@@ -8,6 +8,7 @@ import _ from 'lodash';
 import Gene from './Gene';
 import Coverage from './Coverage';
 import Alignments from './Alignments';
+import ErrorDialog from './ErrorDialog';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -148,7 +149,7 @@ const drawReference = (ctx, reference) => {
     }
 }
 
-const GenomeViewer = ({getData, zoomIn, zoomOut, moveLeft, moveRight, genomeViewer:{min, max, data, reference, title}}) => {
+const GenomeViewer = ({getData, zoomIn, zoomOut, moveLeft, moveRight, genomeViewer:{min, max, data, reference, title, error}}) => {
     const classes = useStyles();
     const [isDragging, setDragging] = useState(false);
     const [clientX, setClientX] = useState(null);
@@ -216,23 +217,26 @@ const GenomeViewer = ({getData, zoomIn, zoomOut, moveLeft, moveRight, genomeView
     }, [reference]);
 
     return(
-        <Grid container className={classes.root} onWheel={handleWheel} spacing={1} draggable="false"         
-            onMouseDown={onMouseDown}
-            onMouseUp={onMouseUp}
-            onMouseMove={onMouseMove}>
-            <Grid item xs={1}>
-                <p className={classes.label}>REFERENCE</p>
+        <Fragment>
+            <Grid container className={classes.root} onWheel={handleWheel} spacing={1} draggable="false"         
+                onMouseDown={onMouseDown}
+                onMouseUp={onMouseUp}
+                onMouseMove={onMouseMove}>
+                <Grid item xs={1}>
+                    <p className={classes.label}>REFERENCE</p>
+                </Grid>
+                <Grid className={classes.reference} item xs={11}>
+                    <canvas id="reference" width="2000" height="50" onClick={(e) => showCordinate(e, "reference")} style={{
+                        width: '100%',
+                        height: '100%',
+                    }}></canvas>
+                </Grid>
+                <Gene />
+                <Coverage data={data} />
+                <Alignments data={data}/>
             </Grid>
-            <Grid className={classes.reference} item xs={11}>
-                <canvas id="reference" width="2000" height="50" onClick={(e) => showCordinate(e, "reference")} style={{
-                    width: '100%',
-                    height: '100%',
-                }}></canvas>
-            </Grid>
-            <Gene />
-            <Coverage data={data} />
-            <Alignments data={data}/>
-        </Grid>
+            <ErrorDialog />
+        </Fragment>
     );
 };
 
