@@ -8,6 +8,7 @@ import {
     GET_HEADERS,
     ERROR,
     CLOSE_ERROR,
+    CHANGE_REFERENCE,
 } from '../types';
 
 const initialState = {
@@ -35,21 +36,29 @@ export default function(state = initialState, action) {
         case ZOOM_OUT:
             return {...state, min: state.min>1? state.min -2: state.min, max: state.max<3000000000? state.max +2 : state.max};
         case MOVE_LEFT:
-            return {...state, min: state.min -payload, max: state.max -payload};
+            if(state.min -payload.moveDistance < 1){
+                return {...state, min: 1, max: 1+payload.range};
+            }else{
+                return {...state, min: state.min -payload.moveDistance, max: state.max -payload.moveDistance};
+            }
         case MOVE_RIGHT:
-            return {...state, min: state.min +payload, max: state.max +payload};
+            if(state.max +payload.moveDistance > 3000000000){
+                return {...state, min: 3000000000 - payload.range, max: 3000000000};
+            }else{
+                return {...state, min: state.min +payload.moveDistance, max: state.max +payload.moveDistance};
+            }
         case SET_RANGE:
             return {...state, min: payload.pos1, max: payload.pos2};
         case GET_HEADERS:
             return {...state, headers: payload.headers};
+        case CHANGE_REFERENCE:
+            return {...state, title: payload.title, min: payload.min, max: payload.max};
         case GET_DATA:
             let data = [];
-            // let reference = [];
             for(let i=0; i <= (state.max - state.min); i++){
                 data.push(getRandomInt(0, 65));
-                // reference.push(letters[parseInt(getRandomInt(0,3))]);
             }
-            return {...state, data: data, reference: payload.seq, title: payload.header};
+            return {...state, data: data, reference: payload.seq};
         case ERROR:
             return {...state, error: true, errorMessage: payload.message};
         case CLOSE_ERROR:

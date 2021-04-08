@@ -59,17 +59,21 @@ const useStyles = makeStyles((theme) => ({
 
 const selectColor = (letter) => {
     let color;
-    switch(letter){
+    switch(letter) {
         case "A":
+        case "a":
             color = "#59CD90";
             break;
         case "T":
+        case "t":
             color = "#c02f42";
             break;
         case "C":
+        case "c":
             color = "#175676";
             break;
         case "G":
+        case "g":
             color = "#F2DC5D";
             break;
         default:
@@ -182,11 +186,11 @@ const GenomeViewer = ({getData, zoomIn, zoomOut, moveLeft, moveRight, genomeView
             const unitPixel = canvasWidth / (max-min);
             //move right
             if(e.clientX < clientX){
-                moveRight(Math.round((clientX - e.clientX)/unitPixel));
+                moveRight(Math.round((clientX - e.clientX)/unitPixel), max-min);
             }
             //move left
             else if(e.clientX > clientX){
-                moveLeft(Math.round((e.clientX - clientX)/unitPixel));
+                moveLeft(Math.round((e.clientX - clientX)/unitPixel), max-min);
             }
         }
     };

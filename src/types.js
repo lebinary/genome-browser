@@ -9,3 +9,4 @@ export const GET_DATA = 'GET_DATA';
 export const GET_HEADERS = 'GET_HEADERS';
 export const ERROR = 'ERROR';
 export const CLOSE_ERROR = 'CLOSE_ERROR';
+export const CHANGE_REFERENCE = 'CHANGE_REFERENCE';

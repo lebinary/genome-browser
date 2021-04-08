@@ -8,6 +8,7 @@ import {
     GET_HEADERS,
     ERROR,
     CLOSE_ERROR,
+    CHANGE_REFERENCE,
 } from '../types';
 import axios from 'axios';
 
@@ -31,17 +32,17 @@ export const setRange = (rangeObj) => (dispatch) => {
     });
 };
 
-export const moveLeft = (moveRange) => (dispatch) => {
+export const moveLeft = (moveDistance, range) => (dispatch) => {
     dispatch({
         type: MOVE_LEFT,
-        payload: moveRange
+        payload: {moveDistance, range}
     });
 };
 
-export const moveRight = (moveRange) => (dispatch) => {
+export const moveRight = (moveDistance, range) => (dispatch) => {
     dispatch({
         type: MOVE_RIGHT,
-        payload: moveRange
+        payload: {moveDistance, range}
     });
 };
 
@@ -58,7 +59,7 @@ export const getData = (title, rangeObj) => async (dispatch) => {
         const res = await axios.get(`http://${window.location.hostname}:8000/api?region=${title}:${min}-${max+1}`);
         dispatch({
             type: GET_DATA,
-            payload: {...res.data, min, max},
+            payload: {...res.data},
         });
     }catch(err) {
         dispatch({
@@ -66,6 +67,15 @@ export const getData = (title, rangeObj) => async (dispatch) => {
             payload: err,
         });
     }
+};
+
+export const changeReference = (title, rangeObj) => async (dispatch) => {
+    const {min, max} = rangeObj;
+
+    dispatch({
+        type: CHANGE_REFERENCE,
+        payload: {title, min, max},
+    });
 };
 
 export const getHeaders = () => async (dispatch) => {

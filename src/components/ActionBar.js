@@ -14,7 +14,7 @@ import {
   TextField,
   ListSubheader,
 } from '@material-ui/core';
-import {setRange, getData, getHeaders} from '../actions';
+import {setRange, changeReference, getHeaders} from '../actions';
 import mainLogo from '../img/vin_logo.png';
 import {Autocomplete} from '@material-ui/lab';
 import ListboxComponent from '../utils/ListboxComponent';
@@ -84,7 +84,7 @@ const renderGroup = (params) => [
   params.children,
 ];
 
-const ActionBar = ({getData, getHeaders, setRange, genomeViewer: {min, max, headers, title}}) => {
+const ActionBar = ({getHeaders, changeReference, setRange, genomeViewer: {min, max, headers, title}}) => {
   const classes = useStyles();
   const [pos1, setPos1] = useState('');
   const [pos2, setPos2] = useState('');
@@ -103,9 +103,11 @@ const ActionBar = ({getData, getHeaders, setRange, genomeViewer: {min, max, head
     setOpen(false);
   };
 
-  const changeReference = () => {
-    setOpen(false);
-    getData(newRef, {min, max});
+  const changeRef = () => {
+    if(newRef !== ''){
+      setOpen(false);
+      changeReference(newRef, {min:1, max:11});
+    }
   };
 
   const handleChangeFrom = (e) => {
@@ -157,7 +159,7 @@ const ActionBar = ({getData, getHeaders, setRange, genomeViewer: {min, max, head
           <Button onClick={handleClose} color="primary">
             Cancel
           </Button>
-          <Button onClick={changeReference} color="primary">
+          <Button onClick={changeRef} color="primary">
             Change
           </Button>
         </DialogActions>
@@ -195,11 +197,14 @@ const ActionBar = ({getData, getHeaders, setRange, genomeViewer: {min, max, head
 };
 
 ActionBar.propTypes = {
+  genomeViewer: PropTypes.object.isRequired,
   setRange: PropTypes.func.isRequired,
+  changeReference: PropTypes.func.isRequired,
+  getHeaders: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = (state) => ({
   genomeViewer: state.genomeViewer
 });
 
-export default connect(mapStateToProps, {getData, getHeaders, setRange})(ActionBar);
+export default connect(mapStateToProps, {getHeaders, changeReference, setRange})(ActionBar);
