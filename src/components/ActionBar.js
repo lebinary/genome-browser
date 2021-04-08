@@ -128,8 +128,7 @@ const ActionBar = ({getData, getHeaders, setRange, genomeViewer: {min, max, head
 
   useEffect(() => {
     getHeaders();
-    getData(title, {min, max});
-  }, []);
+  }, [getHeaders]);
 
   return(
     <div className={classes.root}>
@@ -179,7 +178,6 @@ const ActionBar = ({getData, getHeaders, setRange, genomeViewer: {min, max, head
           <InputBase
             className={classes.input}
             placeholder={max.toString()}
-            disableListWrap
             type="number"
             onChange={handleChangeTo}
             value={pos2}

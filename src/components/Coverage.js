@@ -1,4 +1,4 @@
-import React, {useEffect, Fragment} from 'react';
+import React, {useEffect, useRef, Fragment} from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import {Grid, makeStyles } from '@material-ui/core';
@@ -18,34 +18,44 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
+const drawLine = (ctx, info, style, lineCap = {}) => {
+    const { x, y, x1, y1 } = info;
+    const { color = 'black', width = 1 } = style;
+    
+    ctx.beginPath();
+    ctx.moveTo(x, y);
+    ctx.lineTo(x1, y1);
+    ctx.lineCap = lineCap;
+    ctx.strokeStyle = color;
+    ctx.lineWidth = width;
+    ctx.stroke();
+}
+
+const drawCoverage = (ctx, data) => {
+    const range = data.length -1;
+    const widthRect = 2000 / range;
+    let l = 2000/2;
+    let r = l+widthRect;
+
+    let i = Math.ceil(data.length/2);
+    let j = i - 1;
+    
+    while (j >= 0)
+    {
+        drawLine(ctx, {x: l, y: 150, x1: l, y1: data[j]}, {width: widthRect, color:"#add8e6"}, "butt")
+        j --;
+        l -= widthRect;
+        if (i < data.length) {
+            drawLine(ctx, {x: r, y: 150, x1: r, y1: data[i]}, {width: widthRect, color:"#add8e6"}, "butt")
+            i ++;
+            r += widthRect;
+        }
+    }
+};
+
 const Coverage = ({data, genomeViewer:{min, max}}) => {
     const classes = useStyles();
-    let ctx = null;
-
-    const drawLine = (info, style, lineCap = {}) => {
-        const { x, y, x1, y1 } = info;
-        const { color = 'black', width = 1 } = style;
-        
-        ctx.beginPath();
-        ctx.moveTo(x, y);
-        ctx.lineTo(x1, y1);
-        ctx.lineCap = lineCap;
-        ctx.strokeStyle = color;
-        ctx.lineWidth = width;
-        ctx.stroke();
-    }
-    
-    const drawCoverage = (data) => {
-        const range = max-min;
-        const widthRect = 2000 / range;
-
-        let x = 0;
-        data.forEach(cov => {
-            // drawRect({x: x, y: cov, x1: widthRect, y1: 150}, { color:'blue' });
-            drawLine({x: x, y: 150, x1: x, y1: cov}, {width: widthRect, color:"#add8e6"}, "butt")
-            x += widthRect;
-        })
-    }
+    const ctxRef = useRef(null);
 
     const showCordinate = (e, id) => {
         const canvas = document.getElementById(id);
@@ -57,11 +67,11 @@ const Coverage = ({data, genomeViewer:{min, max}}) => {
     };
 
     useEffect(() => {
+        let ctx = ctxRef.current;
         const coverageCanvas = document.getElementById('coverage');
         ctx = coverageCanvas.getContext("2d");
         ctx.clearRect(0, 0, coverageCanvas.width, coverageCanvas.height);
-        drawCoverage(data);
-
+        drawCoverage(ctx, data);
     }, [data]);
 
     return(

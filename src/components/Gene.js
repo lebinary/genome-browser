@@ -1,4 +1,4 @@
-import React, {useEffect, Fragment} from 'react';
+import React, {useEffect, useRef, Fragment} from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Grid, makeStyles } from '@material-ui/core';
@@ -71,50 +71,51 @@ const genes = [
     }
 ];
 
+const drawLine = (ctx, info, style, lineCap = {}) => {
+    const { x, y, x1, y1 } = info;
+    const { color = 'black', width = 1 } = style;
+    
+    ctx.beginPath();
+    ctx.moveTo(x, y);
+    ctx.lineTo(x1, y1);
+    ctx.lineCap = lineCap;
+    ctx.strokeStyle = color;
+    ctx.lineWidth = width;
+    ctx.stroke();
+}
+
+const drawGene = (ctx, {min, max}, node, type) => {
+    const range = max-min;
+    const unit = 2000 / range;
+    if(!(node.start > max) && !(node.end < min)){
+        //In range
+        let x = 0;
+        let x1 = 0;
+
+        //start position
+        if(node.start <= max && node.start >= min){
+            x = (node.start-min)*unit;
+        }else{
+            x = 0;
+        };
+
+        //end position
+        if(node.end <= max && node.end >= min){
+            x1 = (node.end-min)*unit;
+        }else{
+            x1 = 2000;
+        }
+
+        drawLine(ctx, { x: x, y: 60, x1: x1, y1: 60}, {width: type==="exon"?130:10, color: "#e6e6e4"}, "butt");
+    }
+}
+
 const Gene = ({genomeViewer:{min, max}}) => {
     const classes = useStyles();
-    let ctx = null;
-
-    const drawLine = (info, style, lineCap = {}) => {
-        const { x, y, x1, y1 } = info;
-        const { color = 'black', width = 1 } = style;
-        
-        ctx.beginPath();
-        ctx.moveTo(x, y);
-        ctx.lineTo(x1, y1);
-        ctx.lineCap = lineCap;
-        ctx.strokeStyle = color;
-        ctx.lineWidth = width;
-        ctx.stroke();
-    }
-
-    const drawGene = (node, type) => {
-        const range = max-min;
-        const unit = 2000 / range;
-        if(!(node.start > max) && !(node.end < min)){
-            //In range
-            let x = 0;
-            let x1 = 0;
-
-            //start position
-            if(node.start <= max && node.start >= min){
-                x = (node.start-min)*unit;
-            }else{
-                x = 0;
-            };
-
-            //end position
-            if(node.end <= max && node.end >= min){
-                x1 = (node.end-min)*unit;
-            }else{
-                x1 = 2000;
-            }
-
-            drawLine({ x: x, y: 60, x1: x1, y1: 60}, {width: type==="exon"?130:10, color: "#e6e6e4"}, "butt");
-        }
-    }
+    const ctxRef = useRef(null);
 
     useEffect(() => {
+        let ctx = ctxRef.current;
         //Clear canvas
         const genseCanvas = document.getElementById('genes');
         ctx = genseCanvas.getContext("2d");
@@ -122,12 +123,12 @@ const Gene = ({genomeViewer:{min, max}}) => {
         genes.forEach(gene => {
             //Exons
             gene.exons.forEach(exon => {
-                drawGene(exon, "exon");
+                drawGene(ctx, {min, max}, exon, "exon");
             });
 
             //Introns
             gene.introns.forEach(intron => {
-                drawGene(intron, "intron");
+                drawGene(ctx, {min, max}, intron, "intron");
             });
         });
     }, [min, max]);

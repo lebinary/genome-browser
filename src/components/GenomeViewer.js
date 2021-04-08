@@ -1,4 +1,4 @@
-import React, {Fragment, useEffect, useMemo, useState} from 'react';
+import React, {Fragment, useEffect, useMemo, useState, useRef} from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import {zoomOut, zoomIn, moveLeft, moveRight, getData} from '../actions';
@@ -153,7 +153,7 @@ const GenomeViewer = ({getData, zoomIn, zoomOut, moveLeft, moveRight, genomeView
     const classes = useStyles();
     const [isDragging, setDragging] = useState(false);
     const [clientX, setClientX] = useState(null);
-    let ctx = null;
+    const ctxRef = useRef(null);
 
     const handleWheel = e => {
         if (e.deltaY < 0) {
@@ -205,10 +205,11 @@ const GenomeViewer = ({getData, zoomIn, zoomOut, moveLeft, moveRight, genomeView
             getData(title, {min, max});
         }, 350);
         bounceGetData();
-    }, [min,max]);
+    }, [min,max, getData, title]);
 
     useMemo(() => {
         if(reference !== ""){
+            let ctx = ctxRef.current;
             const referenceCanvas = document.getElementById('reference');
             ctx = referenceCanvas.getContext("2d");
             ctx.clearRect(0, 0, referenceCanvas.width, referenceCanvas.height);

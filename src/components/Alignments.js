@@ -1,4 +1,4 @@
-import React, {useEffect, Fragment} from 'react';
+import React, {useEffect, useRef, Fragment} from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Grid, makeStyles } from '@material-ui/core';
@@ -78,48 +78,49 @@ const getRandomInt = (min, max) => {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 };
 
+
+const drawLine = (ctx, info, style, lineCap = {}) => {
+    const { x, y, x1, y1 } = info;
+    const { color = 'black', width = 1 } = style;
+    
+    ctx.beginPath();
+    ctx.moveTo(x, y);
+    ctx.lineTo(x1, y1);
+    ctx.lineCap = lineCap;
+    ctx.strokeStyle = color;
+    ctx.lineWidth = width;
+    ctx.stroke();
+}
+
+
+const drawAlignments = (ctx, {min,max}) => { 
+    const alignments = [];
+    const alignmentThickness = 500 / 60;
+    const indicatorWidth = 2000 / (max - min);
+
+    // Draw Alignments
+    let y=0;
+    for(let lineIndex=0; lineIndex < 60; lineIndex++){
+        let i=0;
+        let line = [];
+        while(i < 2000){
+            const length = getRandomInt(50,300);
+            line.push({position: i, length: length});
+            drawLine(ctx, { x: i, y: y, x1: (i+length), y1: y}, {color: "#e6e6e4", width: alignmentThickness}, "round");
+            i += (length + getRandomInt(10,100));
+        }
+        alignments.push(line);
+        y += alignmentThickness;
+    }
+
+    // Draw middle indicator
+    drawLine(ctx, {x: 1000-(indicatorWidth/2), y: 500, x1: 1000-(indicatorWidth/2), y1: 0}, {color:"#000"}, "butt");
+    drawLine(ctx, {x: 1000+(indicatorWidth/2), y: 500, x1: 1000+(indicatorWidth/2), y1: 0}, {color:"#000"}, "butt");
+};
+
 const Alignments = ({data, genomeViewer:{min, max}}) => {
     const classes = useStyles();
-    let ctx = null;
-
-    const drawLine = (info, style, lineCap = {}) => {
-        const { x, y, x1, y1 } = info;
-        const { color = 'black', width = 1 } = style;
-        
-        ctx.beginPath();
-        ctx.moveTo(x, y);
-        ctx.lineTo(x1, y1);
-        ctx.lineCap = lineCap;
-        ctx.strokeStyle = color;
-        ctx.lineWidth = width;
-        ctx.stroke();
-    }
-
-    const drawAlignments = () => {
-        const alignments = [];
-        const alignmentThickness = 500 / 60;
-        const indicatorWidth = 2000 / (max - min);
-
-        // Draw Alignments
-        let y=0;
-        for(let lineIndex=0; lineIndex < 60; lineIndex++){
-            let i=0;
-            let line = [];
-            while(i < 2000){
-                const length = getRandomInt(50,300);
-                line.push({position: i, length: length});
-                drawLine({ x: i, y: y, x1: (i+length), y1: y}, {color: "#e6e6e4", width: alignmentThickness}, "round");
-                i += (length + getRandomInt(10,100));
-            }
-            alignments.push(line);
-            y += alignmentThickness;
-        }
-
-        // Draw middle indicator
-        drawLine({x: 1000-(indicatorWidth/2), y: 500, x1: 1000-(indicatorWidth/2), y1: 0}, {color:"#000"}, "butt");
-        drawLine({x: 1000+(indicatorWidth/2), y: 500, x1: 1000+(indicatorWidth/2), y1: 0}, {color:"#000"}, "butt");
-        return alignments;
-    }
+    const ctxRef = useRef(null);
 
     const showCordinate = (e, id) => {
         const canvas = document.getElementById(id);
@@ -131,10 +132,11 @@ const Alignments = ({data, genomeViewer:{min, max}}) => {
     };
 
     useEffect(() => {
+        let ctx = ctxRef.current;
         const alignmentCanvas = document.getElementById('alignments');
         ctx = alignmentCanvas.getContext("2d");
         ctx.clearRect(0, 0, alignmentCanvas.width, alignmentCanvas.height);
-        let alignments = drawAlignments();
+        drawAlignments(ctx, {min,max});
     }, [min, max]);
 
     return(
