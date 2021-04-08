@@ -18,7 +18,7 @@ const initialState = {
     min: 200000,
     max: 200010,
     error: false,
-    errorMessgae: "",
+    errorMessage: "",
 };
 
 const getRandomInt = (min, max) => {
@@ -51,9 +51,9 @@ export default function(state = initialState, action) {
             }
             return {...state, data: data, reference: payload.seq, title: payload.header};
         case ERROR:
-            return {...state, error: true, errorMessgae: payload.message};
+            return {...state, error: true, errorMessage: payload.message};
         case CLOSE_ERROR:
-            return {...state, error: false, errorMessgae: ""};
+            return {...state, error: false, errorMessage: ""};
         default:
             return state;
     }

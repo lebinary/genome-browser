@@ -21,7 +21,7 @@ const ErrorDialog = ({closeError, genomeViewer:{error, errorMessage}}) => {
         </DialogContent>
         <DialogActions>
           <Button onClick={closeError} color="primary" autoFocus>
-            Agree
+            OK
           </Button>
         </DialogActions>
       </Dialog>
