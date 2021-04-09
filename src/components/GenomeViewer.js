@@ -179,18 +179,29 @@ const GenomeViewer = ({getData, zoomIn, zoomOut, moveLeft, moveRight, genomeView
     const onMouseUp = () => {
         setDragging(false);
     };
+
+    const bounceMoveLeft = _.throttle((range) => {
+        moveLeft(1, range);
+    }, 50);
+
+    const bounceMoveRight = _.throttle((range) => {
+        moveRight(1, range);
+    }, 50);
     
     const onMouseMove = e => {
         if (isDragging === true) {
-            const canvasWidth = document.getElementById('reference').clientWidth;
+            const canvasWidth = document.getElementById('reference').scrollWidth;
             const unitPixel = canvasWidth / (max-min);
+
             //move right
-            if(e.clientX < clientX){
-                moveRight(Math.round((clientX - e.clientX)/unitPixel), max-min);
+            if(e.clientX < clientX && (clientX - e.clientX) > unitPixel ){
+                //moveRight(Math.round((clientX - e.clientX)/unitPixel), max-min);
+                bounceMoveRight(max-min);
             }
             //move left
-            else if(e.clientX > clientX){
-                moveLeft(Math.round((e.clientX - clientX)/unitPixel), max-min);
+            else if(e.clientX > clientX && (e.clientX - clientX) > unitPixel){
+                //moveLeft(Math.round((e.clientX - clientX)/unitPixel), max-min);
+                bounceMoveLeft(max-min);
             }
         }
     };
