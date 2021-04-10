@@ -207,4 +207,4 @@ const mapStateToProps = (state) => ({
   genomeViewer: state.genomeViewer
 });
 
-export default connect(mapStateToProps, {getHeaders, changeReference, setRange})(ActionBar);
+export default React.memo(connect(mapStateToProps, {getHeaders, changeReference, setRange})(ActionBar));

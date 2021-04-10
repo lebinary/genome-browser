@@ -79,4 +79,4 @@ const ListboxComponent = forwardRef(function ListboxComponent(props, ref) {
     );
 });
 
-export default ListboxComponent;
+export default React.memo(ListboxComponent);

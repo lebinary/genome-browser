@@ -153,7 +153,7 @@ const drawReference = (ctx, reference) => {
     }
 }
 
-const GenomeViewer = ({getData, zoomIn, zoomOut, moveLeft, moveRight, genomeViewer:{min, max, data, reference, title, error}}) => {
+const GenomeViewer = ({getData, zoomIn, zoomOut, moveLeft, moveRight, genomeViewer:{min, max, data, reference, title}}) => {
     const classes = useStyles();
     const [isDragging, setDragging] = useState(false);
     const [clientX, setClientX] = useState(null);
@@ -269,4 +269,4 @@ const mapStateToProps = (state) => ({
     genomeViewer: state.genomeViewer
 });
 
-export default connect(mapStateToProps, {getData, zoomIn, zoomOut, moveLeft, moveRight})(GenomeViewer);
+export default React.memo(connect(mapStateToProps, {getData, zoomIn, zoomOut, moveLeft, moveRight})(GenomeViewer));
