@@ -5,16 +5,24 @@ import { Grid, makeStyles } from '@material-ui/core';
 import 'fontsource-roboto';
 
 const useStyles = makeStyles((theme) => ({
+    geneContainer: {
+        height: "10%",
+    },
     geneBar: {
+        height: "100%",
         display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        maxHeight: '50px',
+        flexDirection: "column",
+        justifyContent: "center",
+        width: '100%',
     },
     label: {
-        padding: '1em 0',
+        height: "100%",
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
         fontSize: "12px",
         fontWeight: "bold",
+        color: "#172b4d"
     },
 }));
 
@@ -134,17 +142,17 @@ const Gene = ({genomeViewer:{min, max}}) => {
     }, [min, max]);
 
     return(
-        <Fragment>
-            <Grid item xs={1}>
-                <p className={classes.label}>GENES</p>
+        <Grid container className={classes.geneContainer} xs={12}>
+            <Grid item className={classes.label} xs={1}>
+                GENES
             </Grid>
             <Grid item xs={11} className={classes.geneBar}>
                 <canvas id="genes" width="2000" height="150" style={{
                     width: '100%',
-                    height: '100%',
+                    height: '70%',
                 }}></canvas>
             </Grid>
-        </Fragment>
+        </Grid>
     );
 };
 

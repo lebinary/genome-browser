@@ -4,70 +4,42 @@ import { connect } from 'react-redux';
 import { Grid, makeStyles } from '@material-ui/core';
 
 const useStyles = makeStyles((theme) => ({
-    root: {
-        flexGrow: 1,
-    },
-    container: {
-        padding: '0 30px',
-        height: '80vh',
-        width: '100vw',
-    },
-    reference: {
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        maxHeight: '15%',
-    },
-    scaleBar: {
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        maxHeight: '50px',
-    },
-    coverage: {
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        maxHeight: '50px',
-        width: '100%'
+    alignmentContainer: {
+        height: "60%",
     },
     alignments: {
-        height: '45vh',
+        height: '100%',
         width: '100%',
         top: '0px',
-        overflowY: 'scroll',
-    },
-    arrow: {
-        height: '100%',
-        width: '45%',
-    },
-    locationBar: {
-        display: 'flex',
-        alignItems: 'center',
+        overflowY: 'auto',
     },
     label: {
-        padding: '1em 0 0 0',
+        height: "100%",
+        padding: "1em 0 0 0",
         fontSize: "12px",
         fontWeight: "bold",
+        color: "#172b4d"
     },
 
     '@global': {
         '::-webkit-scrollbar': {
-            width: '2px'
+            width: '5px',
+            zIndex: "1000",
         },
         
         '::-webkit-scrollbar-track': {
-        background: '#f1f1f1',
-        borderRadius: '2px',
+            opacity: "0",
+            background: '#f1f1f1',
+            borderRadius: '2px',
         },
 
         '::-webkit-scrollbar-thumb': {
             background: '#888',
-        borderRadius: '2px',
+            borderRadius: '2px',
         },
         
         '::-webkit-scrollbar-thumb:hover': {
-        background: '#add8e6', 
+            background: '#add8e6', 
         }
     }
 }));
@@ -99,7 +71,7 @@ const drawAlignments = (ctx, {min,max}) => {
     const indicatorWidth = 2000 / (max - min);
 
     // Draw Alignments
-    let y=0;
+    let y=alignmentThickness/2;
     for(let lineIndex=0; lineIndex < 60; lineIndex++){
         let i=0;
         let line = [];
@@ -127,7 +99,7 @@ const Alignments = ({data, genomeViewer:{min, max}}) => {
         const rect = canvas.getBoundingClientRect();
         const x = e.clientX - rect.left;
         const y = e.clientY - rect.top;
-        alert(`X: ${x}, Y: ${y}`);
+        alert(`X: ${x}, Y: ${y}, width: ${canvas.scrollWidth}`);
         console.log(e);
     };
 
@@ -140,9 +112,9 @@ const Alignments = ({data, genomeViewer:{min, max}}) => {
     }, [min, max]);
 
     return(
-    <Fragment>
-        <Grid item xs={1}>
-            <p className={classes.label}>ALIGNMENTS</p>
+    <Grid container xs={12} className={classes.alignmentContainer}>
+        <Grid item xs={1} className={classes.label}>
+            ALIGNMENTS
         </Grid>
         <Grid item xs={11} className={classes.alignments}>
             <canvas id="alignments" width="2000" height="500" onClick={(e) => showCordinate(e, "alignments")} style={{
@@ -150,7 +122,7 @@ const Alignments = ({data, genomeViewer:{min, max}}) => {
                 height: "600px",
             }}></canvas>
         </Grid>
-    </Fragment>
+    </Grid>
     );
 };
 

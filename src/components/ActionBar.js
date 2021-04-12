@@ -21,16 +21,33 @@ import ListboxComponent from '../utils/ListboxComponent';
 
 const useStyles = makeStyles((theme) => ({
     root: {
-      padding: '10px 30px',
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      justifyContent: "center",
+      padding: "10px 0",
+      borderBottom: "1px solid #999FA5",
+      boxSizing: "border-box",
+      height: '10vh',
+    },
+    container: {
+      width: "90%",
+      height: "100%",
       display: 'flex',
       justifyContent: 'space-between',
-      backgroundColor: "#E5E5E5",
-      height: "10%",
+      backgroundColor: "#fff",
     },
     searchArea: {
       display: 'flex',
       alignItems: 'stretch',
-      padding: "0 0.5em",
+      height: "90%",
+    },
+    searchContainer: {
+      position: 'relative',
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      justifyContent: "center",
     },
     paper: {
       margin: '0 10px',
@@ -66,14 +83,15 @@ const useStyles = makeStyles((theme) => ({
     },
     logo: {
       display: "block",
-      width: "15%"
+      height: "100%"
     },
     title: {
       position: "absolute",
-      left: "15%",
+      left: "12%",
       height: "100%",
       fontSize: "19px",
       fontWeight: "bold",
+      color: "#2f2f66",
     }
 }));
 
@@ -134,6 +152,7 @@ const ActionBar = ({getHeaders, changeReference, setRange, genomeViewer: {min, m
 
   return(
     <div className={classes.root}>
+    <div className={classes.container}>
       <div className={classes.titleArea}>
         <img src={mainLogo} className={classes.logo} alt="vinbigdata"/>
         <Button onClick={handleClickOpen} className={classes.title}>{title}</Button>
@@ -165,33 +184,36 @@ const ActionBar = ({getHeaders, changeReference, setRange, genomeViewer: {min, m
         </DialogActions>
       </Dialog>
       </div>
-      <div className={classes.searchArea}>
-        <Paper component="form" className={classes.paper}>
-          <InputBase
-            className={classes.input}
-            placeholder={min.toString()}
-            type="number"
-            onChange={handleChangeFrom}
-            value={pos1}
-          />
-          
-          :
+      <div className={classes.searchContainer}>
+        <div className={classes.searchArea}>
+          <Paper component="form" className={classes.paper}>
+            <InputBase
+              className={classes.input}
+              placeholder={min.toString()}
+              type="number"
+              onChange={handleChangeFrom}
+              value={pos1}
+            />
+            
+            :
 
-          <InputBase
-            className={classes.input}
-            placeholder={max.toString()}
-            type="number"
-            onChange={handleChangeTo}
-            value={pos2}
-          />
-        </Paper>
-        <Button variant="contained" color="primary" 
-        disabled={((pos2-pos1<10) || pos2 === '' || (pos1 === '' && pos1 > 0))}
-        className={classes.button} 
-        onClick={handleClick}>
-          GO
-        </Button>
+            <InputBase
+              className={classes.input}
+              placeholder={max.toString()}
+              type="number"
+              onChange={handleChangeTo}
+              value={pos2}
+            />
+          </Paper>
+          <Button variant="contained" color="primary" 
+          disabled={((pos2-pos1<10) || pos2 === '' || (pos1 === '' && pos1 > 0))}
+          className={classes.button} 
+          onClick={handleClick}>
+            GO
+          </Button>
+        </div>
       </div>
+    </div>
     </div>
   );
 };

@@ -1,4 +1,4 @@
-import React, {Fragment, useEffect, useMemo, useState, useRef} from 'react';
+import React, {useEffect, useMemo, useState, useRef} from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import {zoomOut, zoomIn, moveLeft, moveRight, getData} from '../actions';
@@ -12,16 +12,34 @@ import ErrorDialog from './ErrorDialog';
 
 const useStyles = makeStyles((theme) => ({
     root: {
-        padding: '0 30px',
-        height: '80vh',
-        width: '100vw',
+        backgroundColor: "#e5e5e5",
+        boxSizing: "border-box",
+        padding: "1px",
+        height: "90vh",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+    },
+    container: {
+        width: "95%",
+        height: "95%",
+        backgroundColor: "#E9E9E9",
+        margin: "0.5em 30px",
+        padding: "0.5em",
+        borderRadius: "10px",
+        backgroundColor: "#fff",
+        border: "1px solid #999FA5",
+        padding: "5px 30px",
+    },
+    referenceContainer: {
+        height: "10%",
     },
     reference: {
+        height: "100%",
         display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        maxHeight: '50px',
-        width: '100%'
+        flexDirection: "column",
+        justifyContent: "center",
+        width: '100%',
     },
     scaleBar: {
         display: 'flex',
@@ -51,9 +69,13 @@ const useStyles = makeStyles((theme) => ({
         alignItems: 'center',
     },
     label: {
-        padding: '1em 0',
+        height: "100%",
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
         fontSize: "12px",
         fontWeight: "bold",
+        color: "#172b4d"
     },
 }));
 
@@ -100,13 +122,13 @@ const drawLetter = (ctx, letter, info = {}, width) => {
 
     //Draw background
     let color = selectColor(letter);
-    drawLine(ctx, {x: x, y: y+3, x1: x, y1: y-27}, {width: width, color: color}, "butt")
+    drawLine(ctx, {x: x, y: 0, x1: x, y1: 50}, {width: width, color: color}, "butt")
 
     ctx.beginPath();
     ctx.font='bold 30px Roboto';
     ctx.fillStyle = "#fff";
     ctx.textAlign = "center";
-    ctx.fillText(letter, x, y);
+    ctx.fillText(letter, x, y-10);
     ctx.closePath();
 }
 
@@ -124,11 +146,11 @@ const drawReference = (ctx, reference) => {
         
         while (j >= 0)
         {
-            drawLetter(ctx, splittedRef[j], {x: l, y: 41}, widthRect);
+            drawLetter(ctx, splittedRef[j], {x: l, y: 45}, widthRect);
             j --;
             l -= widthRect;
             if (i < splittedRef.length) {
-                drawLetter(ctx, splittedRef[i], {x: r , y: 41}, widthRect);
+                drawLetter(ctx, splittedRef[i], {x: r , y: 45}, widthRect);
                 i ++;
                 r += widthRect;
             }
@@ -140,12 +162,12 @@ const drawReference = (ctx, reference) => {
         while (j >= 0)
         {
             let color = selectColor(splittedRef[j]);
-            drawLine(ctx, {x: l, y: 45, x1: l, y1: 15}, {width: widthRect, color: color}, "butt")
+            drawLine(ctx, {x: l, y: 0, x1: l, y1: 50}, {width: widthRect, color: color}, "butt")
             j --;
             l -= widthRect;
             if (i < splittedRef.length) {
                 let color = selectColor(splittedRef[i]);
-                drawLine(ctx, {x: r, y: 45, x1: r, y1: 15}, {width: widthRect, color: color}, "butt")
+                drawLine(ctx, {x: r, y: 0, x1: r, y1: 50}, {width: widthRect, color: color}, "butt")
                 i ++;
                 r += widthRect;
             }
@@ -208,10 +230,18 @@ const GenomeViewer = ({getData, zoomIn, zoomOut, moveLeft, moveRight, genomeView
 
     const showCordinate = (e, id) => {
         const canvas = document.getElementById(id);
+
         const rect = canvas.getBoundingClientRect();
         const x = e.clientX - rect.left;
         const y = e.clientY - rect.top;
-        alert(`X: ${x}, Y: ${y}`);
+
+        if((max-min) % 2 === 0){
+            const unitPixel = canvas.clientWidth / (max-min);
+            alert(`position: ${min + Math.round(x / unitPixel)}`);
+        }else{
+            const unitPixel = canvas.clientWidth / (max-min);
+            alert(`odd: ${(min + parseInt(x / unitPixel))}`);
+        }
         console.log(e);
     };
 
@@ -233,26 +263,28 @@ const GenomeViewer = ({getData, zoomIn, zoomOut, moveLeft, moveRight, genomeView
     }, [reference]);
 
     return(
-        <Fragment>
-            <Grid container className={classes.root} onWheel={handleWheel} spacing={1} draggable="false"         
+        <div className={classes.root}>
+            <Grid container className={classes.container} onWheel={handleWheel} draggable="false"         
                 onMouseDown={onMouseDown}
                 onMouseUp={onMouseUp}
                 onMouseMove={onMouseMove}>
-                <Grid item xs={1}>
-                    <p className={classes.label}>REFERENCE</p>
-                </Grid>
-                <Grid className={classes.reference} item xs={11}>
-                    <canvas id="reference" width="2000" height="50" onClick={(e) => showCordinate(e, "reference")} style={{
-                        width: '100%',
-                        height: '100%',
-                    }}></canvas>
+                <Grid container xs={12} className={classes.referenceContainer}>
+                    <Grid item xs={1} className={classes.label}>
+                        REFERENCE
+                    </Grid>
+                    <Grid className={classes.reference} item xs={11}>
+                        <canvas id="reference" width="2000" height="50" onClick={(e) => showCordinate(e, "reference")} style={{
+                            width: '100%',
+                            height: '60%',
+                        }}></canvas>
+                    </Grid>
                 </Grid>
                 <Gene />
                 <Coverage data={data} />
                 <Alignments data={data}/>
             </Grid>
             <ErrorDialog />
-        </Fragment>
+        </div>
     );
 };
 

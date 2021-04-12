@@ -4,17 +4,24 @@ import { connect } from 'react-redux';
 import {Grid, makeStyles } from '@material-ui/core';
 
 const useStyles = makeStyles((theme) => ({
+    coverageContainer: {
+        height: "10%",
+    },
     coverage: {
+        height: "100%",
         display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        maxHeight: '50px',
-        width: '100%'
+        flexDirection: "column",
+        justifyContent: "center",
+        width: '100%',
     },
     label: {
-        padding: '1em 0',
+        height: "100%",
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
         fontSize: "12px",
         fontWeight: "bold",
+        color: "#172b4d"
     },
 }));
 
@@ -75,9 +82,9 @@ const Coverage = ({data, genomeViewer:{min, max}}) => {
     }, [data]);
 
     return(
-    <Fragment>
-        <Grid item xs={1}>
-            <p className={classes.label}>COVERAGE</p>
+    <Grid container xs={12} className={classes.coverageContainer}>
+        <Grid item xs={1} className={classes.label}>
+            COVERAGE
         </Grid>
         <Grid item xs={11} className={classes.coverage}>
             <canvas id="coverage" width="2000" height="150" onClick={(e) => showCordinate(e, "coverage")} style={{
@@ -85,7 +92,7 @@ const Coverage = ({data, genomeViewer:{min, max}}) => {
                 height: '100%',
             }}></canvas>
         </Grid>
-    </Fragment>
+    </Grid>
     );
 };
 
