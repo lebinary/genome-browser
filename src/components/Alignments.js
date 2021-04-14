@@ -1,11 +1,11 @@
-import React, {useEffect, useRef, Fragment} from 'react';
+import React, {useEffect, useRef, Fragment, useState} from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Grid, makeStyles } from '@material-ui/core';
 
 const useStyles = makeStyles((theme) => ({
     alignmentContainer: {
-        height: "60%",
+        height: "40%",
     },
     alignments: {
         height: '100%',
@@ -13,12 +13,30 @@ const useStyles = makeStyles((theme) => ({
         top: '0px',
         overflowY: 'auto',
     },
-    label: {
+    coverageContainer: {
+        height: "10%",
+    },
+    coverage: {
         height: "100%",
-        padding: "1em 0 0 0",
-        fontSize: "12px",
+        display: 'flex',
+        flexDirection: "column",
+        justifyContent: "center",
+        width: '100%',
+    },
+    labelText: {
+        height: "100%",
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
         fontWeight: "bold",
-        color: "#172b4d"
+        color: "#172b4d",
+        fontSize: "12px",
+    },
+    labelContainer: {
+        height: "100%",
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
     },
 
     '@global': {
@@ -28,7 +46,6 @@ const useStyles = makeStyles((theme) => ({
         },
         
         '::-webkit-scrollbar-track': {
-            opacity: "0",
             background: '#f1f1f1',
             borderRadius: '2px',
         },
@@ -90,6 +107,29 @@ const drawAlignments = (ctx, {min,max}) => {
     drawLine(ctx, {x: 1000+(indicatorWidth/2), y: 500, x1: 1000+(indicatorWidth/2), y1: 0}, {color:"#000"}, "butt");
 };
 
+
+const drawCoverage = (ctx, data) => {
+    const range = data.length -1;
+    const widthRect = 2000 / range;
+    let l = 2000/2;
+    let r = l+widthRect;
+
+    let i = Math.ceil(data.length/2);
+    let j = i - 1;
+    
+    while (j >= 0)
+    {
+        drawLine(ctx, {x: l, y: 150, x1: l, y1: data[j]}, {width: widthRect, color:"#add8e6"}, "butt")
+        j --;
+        l -= widthRect;
+        if (i < data.length) {
+            drawLine(ctx, {x: r, y: 150, x1: r, y1: data[i]}, {width: widthRect, color:"#add8e6"}, "butt")
+            i ++;
+            r += widthRect;
+        }
+    }
+};
+
 const Alignments = ({data, genomeViewer:{min, max}}) => {
     const classes = useStyles();
     const ctxRef = useRef(null);
@@ -109,20 +149,39 @@ const Alignments = ({data, genomeViewer:{min, max}}) => {
         ctx = alignmentCanvas.getContext("2d");
         ctx.clearRect(0, 0, alignmentCanvas.width, alignmentCanvas.height);
         drawAlignments(ctx, {min,max});
+
+
+        const coverageCanvas = document.getElementById('coverage');
+        ctx = coverageCanvas.getContext("2d");
+        ctx.clearRect(0, 0, coverageCanvas.width, coverageCanvas.height);
+        drawCoverage(ctx, data);
     }, [min, max]);
 
     return(
-    <Grid container xs={12} className={classes.alignmentContainer}>
-        <Grid item xs={1} className={classes.label}>
-            ALIGNMENTS
-        </Grid>
-        <Grid item xs={11} className={classes.alignments}>
-            <canvas id="alignments" width="2000" height="500" onClick={(e) => showCordinate(e, "alignments")} style={{
-                width: "100%",
-                height: "600px",
-            }}></canvas>
-        </Grid>
-    </Grid>
+        <Fragment>
+            <Grid container xs={12} className={classes.coverageContainer}>
+                <Grid item xs={1} className={classes.labelContainer}>
+                    <label className={classes.labelText}>COVERAGE</label>
+                </Grid>
+                <Grid item xs={11} className={classes.coverage}>
+                    <canvas id="coverage" width="2000" height="150" onClick={(e) => showCordinate(e, "coverage")} style={{
+                        width: '100%',
+                        height: '100%',
+                    }}></canvas>
+                </Grid>
+            </Grid>
+            <Grid container xs={12} className={classes.alignmentContainer}>
+                <Grid item xs={1} className={classes.labelContainer}>
+                    <label className={classes.labelText}>ALIGNMENTS</label>
+                </Grid>
+                <Grid item xs={11} className={classes.alignments}>
+                    <canvas id="alignments" width="2000" height="500" onClick={(e) => showCordinate(e, "alignments")} style={{
+                        width: "100%",
+                        height: "600px",
+                    }}></canvas>
+                </Grid>
+            </Grid>
+        </Fragment>
     );
 };
 

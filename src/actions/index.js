@@ -9,8 +9,13 @@ import {
     ERROR,
     CLOSE_ERROR,
     CHANGE_REFERENCE,
+    LOAD_BAMFILE,
+    OPEN_SETTING,
+    CLOSE_SETTING,
+    UPDATE_SETTINGS,
 } from '../types';
 import axios from 'axios';
+import {BamFile} from '@gmod/bam';
 
 
 export const zoomIn = () => (dispatch) => {
@@ -52,6 +57,25 @@ export const closeError = () => (dispatch) => {
     });
 };
 
+export const openSetting = () => (dispatch) => {
+    dispatch({
+        type: OPEN_SETTING,
+    });
+};
+
+export const closeSetting = () => (dispatch) => {
+    dispatch({
+        type: CLOSE_SETTING,
+    });
+};
+
+export const updateSettings = (settingsObj) => (dispatch) => {
+    dispatch({
+        type: UPDATE_SETTINGS,
+        payload: settingsObj,
+    });
+};
+
 export const getData = (title, rangeObj) => async (dispatch) => {
     const {min, max} = rangeObj;
 
@@ -85,6 +109,27 @@ export const getHeaders = () => async (dispatch) => {
         dispatch({
             type: GET_HEADERS,
             payload: res.data,
+        });
+    }catch(err) {
+        dispatch({
+            type: ERROR,
+            payload: err,
+        });
+    }
+};
+
+export const loadBamFile = (title, min, max, bamFile) => async (dispatch) => {
+    const t = new BamFile({
+        bamPath: `${bamFile}`,
+    });
+
+    let header = await t.getHeader();
+    let records = await t.getRecordsForRange(`${title}`, min, max);
+
+    try {
+        dispatch({
+            type: LOAD_BAMFILE,
+            payload: records
         });
     }catch(err) {
         dispatch({

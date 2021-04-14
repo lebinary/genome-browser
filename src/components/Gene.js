@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, Fragment} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Grid, makeStyles } from '@material-ui/core';
@@ -7,6 +7,7 @@ import 'fontsource-roboto';
 const useStyles = makeStyles((theme) => ({
     geneContainer: {
         height: "10%",
+        borderBottom: "1px solid #C0C0C0"
     },
     geneBar: {
         height: "100%",
@@ -15,14 +16,21 @@ const useStyles = makeStyles((theme) => ({
         justifyContent: "center",
         width: '100%',
     },
-    label: {
+
+    labelText: {
         height: "100%",
         display: "flex",
         flexDirection: "column",
         justifyContent: "center",
-        fontSize: "12px",
         fontWeight: "bold",
-        color: "#172b4d"
+        color: "#172b4d",
+        fontSize: "12px",
+    },
+    labelContainer: {
+        height: "100%",
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
     },
 }));
 
@@ -114,13 +122,14 @@ const drawGene = (ctx, {min, max}, node, type) => {
             x1 = 2000;
         }
 
-        drawLine(ctx, { x: x, y: 60, x1: x1, y1: 60}, {width: type==="exon"?130:10, color: "#e6e6e4"}, "butt");
+        drawLine(ctx, { x: x, y: 25, x1: x1, y1: 25}, {width: type==="exon"?130:10, color: "#e6e6e4"}, "butt");
     }
 }
 
 const Gene = ({genomeViewer:{min, max}}) => {
     const classes = useStyles();
     const ctxRef = useRef(null);
+
 
     useEffect(() => {
         let ctx = ctxRef.current;
@@ -143,13 +152,13 @@ const Gene = ({genomeViewer:{min, max}}) => {
 
     return(
         <Grid container className={classes.geneContainer} xs={12}>
-            <Grid item className={classes.label} xs={1}>
-                GENES
+            <Grid item className={classes.labelContainer} xs={1}>
+                <label className={classes.labelText}>GENES</label>
             </Grid>
             <Grid item xs={11} className={classes.geneBar}>
-                <canvas id="genes" width="2000" height="150" style={{
+                <canvas id="genes" width="2000" height="50" style={{
                     width: '100%',
-                    height: '70%',
+                    height: '60%',
                 }}></canvas>
             </Grid>
         </Grid>

@@ -1,8 +1,15 @@
 import React, {Children, isValidElement, cloneElement, createContext, forwardRef, useContext, useRef, useEffect} from 'react';
 import { useTheme } from '@material-ui/core/styles';
 import { VariableSizeList } from 'react-window';
-import {ListSubheader, useMediaQuery} from '@material-ui/core';
+import {ListSubheader, useMediaQuery, makeStyles} from '@material-ui/core';
 
+const useStyles = makeStyles((theme) => ({
+    title: {
+      fontSize: "14px",
+      fontWeight: "bold",
+      color: "#2f2f66",
+    }
+}));
 
 const LISTBOX_PADDING = 8; // px
 
@@ -34,6 +41,7 @@ function useResetCache(data) {
 }
 
 const ListboxComponent = forwardRef(function ListboxComponent(props, ref) {
+    const classes = useStyles();
     const { children, ...other } = props;
     const itemData = Children.toArray(children);
     const theme = useTheme();
@@ -59,7 +67,7 @@ const ListboxComponent = forwardRef(function ListboxComponent(props, ref) {
     const gridRef = useResetCache(itemCount);
 
     return (
-        <div ref={ref}>
+        <div className={classes.title} ref={ref}>
         <OuterElementContext.Provider value={other}>
             <VariableSizeList
             itemData={itemData}

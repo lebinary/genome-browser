@@ -9,6 +9,10 @@ import {
     ERROR,
     CLOSE_ERROR,
     CHANGE_REFERENCE,
+    LOAD_BAMFILE,
+    OPEN_SETTING,
+    CLOSE_SETTING,
+    UPDATE_SETTINGS,
 } from '../types';
 
 const initialState = {
@@ -20,6 +24,14 @@ const initialState = {
     max: 200010,
     error: false,
     errorMessage: "",
+    bamFile: null,
+    alignments: {},
+    isSetting: false,
+    settings: {
+        checkedReference: true,
+        checkedGene: true,
+        checkedAlignment: true,
+    }
 };
 
 const getRandomInt = (min, max) => {
@@ -59,10 +71,18 @@ export default function(state = initialState, action) {
                 data.push(getRandomInt(0, 65));
             }
             return {...state, data: data, reference: payload.seq};
+        case LOAD_BAMFILE:
+            return {...state, alignments: payload};
         case ERROR:
             return {...state, error: true, errorMessage: payload.message};
         case CLOSE_ERROR:
             return {...state, error: false, errorMessage: ""};
+        case OPEN_SETTING:
+            return {...state, isSetting: true};
+        case CLOSE_SETTING:
+            return {...state, isSetting: false};
+        case UPDATE_SETTINGS:
+            return {...state, settings: payload};
         default:
             return state;
     }

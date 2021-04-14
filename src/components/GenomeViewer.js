@@ -1,14 +1,18 @@
 import React, {useEffect, useMemo, useState, useRef} from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import {zoomOut, zoomIn, moveLeft, moveRight, getData} from '../actions';
-import {Grid, makeStyles } from '@material-ui/core';
+import {zoomOut, zoomIn, moveLeft, moveRight, getData, loadBamFile} from '../actions';
+import {
+    Grid,
+    makeStyles,
+    Checkbox } from '@material-ui/core';
 import _ from 'lodash';
 
 import Gene from './Gene';
-import Coverage from './Coverage';
-import Alignments from './Alignments';
 import ErrorDialog from './ErrorDialog';
+import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
+import CheckBoxIcon from '@material-ui/icons/CheckBox';
+import Alignments from './Alignments';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -23,16 +27,14 @@ const useStyles = makeStyles((theme) => ({
     container: {
         width: "95%",
         height: "95%",
-        backgroundColor: "#E9E9E9",
-        margin: "0.5em 30px",
-        padding: "0.5em",
         borderRadius: "10px",
         backgroundColor: "#fff",
         border: "1px solid #999FA5",
-        padding: "5px 30px",
+        padding: "0.5em 1em",
     },
     referenceContainer: {
         height: "10%",
+        borderBottom: "1px solid #C0C0C0"
     },
     reference: {
         height: "100%",
@@ -41,42 +43,27 @@ const useStyles = makeStyles((theme) => ({
         justifyContent: "center",
         width: '100%',
     },
-    scaleBar: {
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        maxHeight: '50px',
-    },
-    coverage: {
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        maxHeight: '50px',
-        width: '100%'
-    },
-    alignments: {
-        height: '45vh',
-        width: '100%',
-        top: '0px',
-        overflowY: 'scroll',
-    },
-    arrow: {
-        height: '100%',
-        width: '45%',
-    },
-    locationBar: {
-        display: 'flex',
-        alignItems: 'center',
-    },
-    label: {
+    labelText: {
         height: "100%",
         display: "flex",
         flexDirection: "column",
         justifyContent: "center",
-        fontSize: "12px",
         fontWeight: "bold",
-        color: "#172b4d"
+        color: "#172b4d",
+        fontSize: "12px",
     },
+    label: {
+        display: "flex",
+    },
+    labelContainer: {
+        height: "100%",
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+    },
+    checkBox: {
+        padding: "0"
+    }
 }));
 
 const selectColor = (letter) => {
@@ -175,11 +162,12 @@ const drawReference = (ctx, reference) => {
     }
 }
 
-const GenomeViewer = ({getData, zoomIn, zoomOut, moveLeft, moveRight, genomeViewer:{min, max, data, reference, title}}) => {
+const GenomeViewer = ({getData, loadBamFile, zoomIn, zoomOut, moveLeft, moveRight, genomeViewer:{min, max,data, settings, reference, title, bamFile}}) => {
     const classes = useStyles();
     const [isDragging, setDragging] = useState(false);
     const [clientX, setClientX] = useState(null);
     const ctxRef = useRef(null);
+    const {checkedReference, checkedGene, checkedAlignment} = settings;
 
     const handleWheel = e => {
         if (e.deltaY < 0) {
@@ -248,9 +236,13 @@ const GenomeViewer = ({getData, zoomIn, zoomOut, moveLeft, moveRight, genomeView
     useEffect(() => {
         const bounceGetData = _.debounce(() => {
             getData(title, {min, max});
+
+            if(bamFile !== null){
+                loadBamFile(title, min, max, bamFile);
+            };
         }, 350);
         bounceGetData();
-    }, [min,max, getData, title]);
+    }, [min,max, getData, title, bamFile, loadBamFile]);
 
     useMemo(() => {
         if(reference !== ""){
@@ -268,20 +260,23 @@ const GenomeViewer = ({getData, zoomIn, zoomOut, moveLeft, moveRight, genomeView
                 onMouseDown={onMouseDown}
                 onMouseUp={onMouseUp}
                 onMouseMove={onMouseMove}>
-                <Grid container xs={12} className={classes.referenceContainer}>
-                    <Grid item xs={1} className={classes.label}>
-                        REFERENCE
+                {checkedReference &&
+                    <Grid container xs={12} className={classes.referenceContainer}>
+                        <Grid item xs={1} className={classes.labelContainer}>
+                            <div className={classes.label}>
+                                <label className={classes.labelText}>REFERENCE</label>
+                            </div>
+                        </Grid>
+                        <Grid className={classes.reference} item xs={11}>
+                            <canvas id="reference" width="2000" height="50" onClick={(e) => showCordinate(e, "reference")} style={{
+                                width: '100%',
+                                height: '60%',
+                            }}></canvas>
+                        </Grid>
                     </Grid>
-                    <Grid className={classes.reference} item xs={11}>
-                        <canvas id="reference" width="2000" height="50" onClick={(e) => showCordinate(e, "reference")} style={{
-                            width: '100%',
-                            height: '60%',
-                        }}></canvas>
-                    </Grid>
-                </Grid>
-                <Gene />
-                <Coverage data={data} />
-                <Alignments data={data}/>
+                }
+                {checkedGene && <Gene />}
+                {checkedAlignment && <Alignments data={data}/>}
             </Grid>
             <ErrorDialog />
         </div>
@@ -294,6 +289,7 @@ GenomeViewer.propTypes = {
     zoomOut: PropTypes.func.isRequired,
     moveLeft: PropTypes.func.isRequired,
     moveRight: PropTypes.func.isRequired,
+    loadBamFile: PropTypes.func.isRequired,
     genomeViewer: PropTypes.object.isRequired,
 };
 
@@ -301,4 +297,4 @@ const mapStateToProps = (state) => ({
     genomeViewer: state.genomeViewer
 });
 
-export default React.memo(connect(mapStateToProps, {getData, zoomIn, zoomOut, moveLeft, moveRight})(GenomeViewer));
+export default React.memo(connect(mapStateToProps, {getData, zoomIn, zoomOut, moveLeft, moveRight, loadBamFile})(GenomeViewer));

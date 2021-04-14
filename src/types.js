@@ -10,3 +10,7 @@ export const GET_HEADERS = 'GET_HEADERS';
 export const ERROR = 'ERROR';
 export const CLOSE_ERROR = 'CLOSE_ERROR';
 export const CHANGE_REFERENCE = 'CHANGE_REFERENCE';
+export const LOAD_BAMFILE = 'LOAD_BAMFILE';
+export const OPEN_SETTING = 'OPEN_SETTING';
+export const CLOSE_SETTING = 'CLOSE_SETTING';
+export const UPDATE_SETTINGS = 'UPDATE_SETTINGS';
