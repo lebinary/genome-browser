@@ -153,6 +153,7 @@ const ActionBar = ({getHeaders, changeReference, setRange, openSetting, genomeVi
   const handleClickOutside = (e) => {
     if (editTitleRef.current && !editTitleRef.current.contains(e.target)) {
       if(e.target.value === undefined){
+        setNewRef(title);
         setEditMode(false);
       }
     }

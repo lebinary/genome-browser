@@ -15,8 +15,7 @@ import {
     UPDATE_SETTINGS,
 } from '../types';
 import axios from 'axios';
-import {BamFile} from '@gmod/bam';
-
+import { ContactSupportOutlined } from '@material-ui/icons';
 
 export const zoomIn = () => (dispatch) => {
     dispatch({
@@ -69,10 +68,10 @@ export const closeSetting = () => (dispatch) => {
     });
 };
 
-export const updateSettings = (settingsObj) => (dispatch) => {
+export const updateSettings = (settingsObj, bamFile) => (dispatch) => {
     dispatch({
         type: UPDATE_SETTINGS,
-        payload: settingsObj,
+        payload: {settingsObj, bamFile},
     });
 };
 
@@ -103,7 +102,6 @@ export const changeReference = (title, rangeObj) => async (dispatch) => {
 };
 
 export const getHeaders = () => async (dispatch) => {
-
     try {
         const res = await axios.get(`http://${window.location.hostname}:8000/api?headers`);
         dispatch({
@@ -119,22 +117,34 @@ export const getHeaders = () => async (dispatch) => {
 };
 
 export const loadBamFile = (title, min, max, bamFile) => async (dispatch) => {
-    const t = new BamFile({
-        bamPath: `${bamFile}`,
-    });
+    let reader = new FileReader(); 
+    reader.readAsText(bamFile);
+    reader.onload = async () => {
+        let lines = reader.result.split('\n');
 
-    let header = await t.getHeader();
-    let records = await t.getRecordsForRange(`${title}`, min, max);
+        let data = [];
+        lines.forEach(line => {
+            let el = line.split('\t');
+            let item = {
+                iteration: el[0],
+                pos1: el[1],
+                pos2: el[2],
+                description: el[3],
+            }
+            data.push(item);
 
-    try {
-        dispatch({
-            type: LOAD_BAMFILE,
-            payload: records
         });
-    }catch(err) {
-        dispatch({
-            type: ERROR,
-            payload: err,
-        });
+
+        try {
+            dispatch({
+                type: LOAD_BAMFILE,
+                payload: data
+            });
+        }catch(err) {
+            dispatch({
+                type: ERROR,
+                payload: err,
+            });
+        }
     }
 };

@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, Fragment, useState} from 'react';
+import React, {useEffect, useRef, Fragment} from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Grid, makeStyles } from '@material-ui/core';
@@ -81,56 +81,122 @@ const drawLine = (ctx, info, style, lineCap = {}) => {
     ctx.stroke();
 }
 
+// const drawAlignments = (ctx, {min,max}) => { 
+//     const alignments = [];
+//     const alignmentThickness = 500 / 60;
+//     const indicatorWidth = 2000 / (max - min);
 
-const drawAlignments = (ctx, {min,max}) => { 
-    const alignments = [];
+//     // Draw Alignments
+//     let y=alignmentThickness/2;
+//     for(let lineIndex=0; lineIndex < 60; lineIndex++){
+//         let i=0;
+//         let line = [];
+//         while(i < 2000){
+//             const length = getRandomInt(50,300);
+//             line.push({position: i, length: length});
+//             drawLine(ctx, { x: i, y: y, x1: (i+length), y1: y}, {color: "#e6e6e4", width: alignmentThickness}, "round");
+//             i += (length + getRandomInt(10,100));
+//         }
+//         alignments.push(line);
+//         y += alignmentThickness;
+//     }
+
+//     // Draw middle indicator
+//     drawLine(ctx, {x: 1000-(indicatorWidth/2), y: 500, x1: 1000-(indicatorWidth/2), y1: 0}, {color:"#000"}, "butt");
+//     drawLine(ctx, {x: 1000+(indicatorWidth/2), y: 500, x1: 1000+(indicatorWidth/2), y1: 0}, {color:"#000"}, "butt");
+// };
+
+const testAlignment = [
+    {
+        iteration: '1',
+        pos1: '100',
+        pos2: '150',
+    },
+    {
+        iteration: '60',
+        pos1: '100',
+        pos2: '150',
+    },
+]
+
+
+const drawAlignments = (ctx, alignments, {min,max}) => {
     const alignmentThickness = 500 / 60;
-    const indicatorWidth = 2000 / (max - min);
+    const widthRect = 2000 / (max - min);
 
     // Draw Alignments
-    let y=alignmentThickness/2;
-    for(let lineIndex=0; lineIndex < 60; lineIndex++){
-        let i=0;
-        let line = [];
-        while(i < 2000){
-            const length = getRandomInt(50,300);
-            line.push({position: i, length: length});
-            drawLine(ctx, { x: i, y: y, x1: (i+length), y1: y}, {color: "#e6e6e4", width: alignmentThickness}, "round");
-            i += (length + getRandomInt(10,100));
+    alignments.forEach(alignment => {
+        const {iteration, pos1, pos2} = alignment;
+
+        //left side
+        if(pos1 <= min && pos2 >= min && pos2 <= max){
+            let y = (iteration*alignmentThickness) - alignmentThickness/2;
+            if((max - min) % 2 ===0){
+                drawLine(ctx, { x: 0, y: y, x1: ((parseInt(pos2)-min) * widthRect + widthRect/2), y1: y}, {color: "#e6e6e4", width: alignmentThickness}, "butt");
+            }else{
+                drawLine(ctx, { x: 0, y: y, x1: ((parseInt(pos2)-min) * widthRect + widthRect), y1: y}, {color: "#e6e6e4", width: alignmentThickness}, "butt");
+            }
         }
-        alignments.push(line);
-        y += alignmentThickness;
-    }
+
+        //right side
+        else if(pos2 >= max && pos1 <= max && pos1 >= min){
+            let y = (iteration*alignmentThickness) - alignmentThickness/2;
+            if((max - min) % 2 ===0){
+                drawLine(ctx, { x: ((parseInt(pos1)-min) * widthRect - widthRect/2), y: y, x1: 2000, y1: y}, {color: "#e6e6e4", width: alignmentThickness}, "butt");
+            }else{
+                drawLine(ctx, { x: ((parseInt(pos1)-min) * widthRect), y: y, x1: 2000, y1: y}, {color: "#e6e6e4", width: alignmentThickness}, "butt");
+            }
+        }
+        
+        //in range
+        else if(pos1 >= min && pos2 <= max){
+            let y = (iteration*alignmentThickness) - alignmentThickness/2;
+            if((max - min) % 2 ===0){
+                drawLine(ctx, { x: ((parseInt(pos1)-min) * widthRect - widthRect/2), y: y, x1: ((parseInt(pos2)-min) * widthRect + widthRect/2), y1: y}, {color: "#e6e6e4", width: alignmentThickness}, "butt");
+            }else{
+                drawLine(ctx, { x: ((parseInt(pos1)-min) * widthRect), y: y, x1: ((parseInt(pos2)-min) * widthRect + widthRect), y1: y}, {color: "#e6e6e4", width: alignmentThickness}, "butt");
+            }
+        }
+
+        //over range
+        else if(pos1 < min && pos2 > max){
+            let y = (iteration*alignmentThickness) - alignmentThickness/2;
+            drawLine(ctx, { x: 0, y: y, x1: 2000, y1: y}, {color: "#e6e6e4", width: alignmentThickness}, "butt");
+
+        }
+
+        //over range
+    });
 
     // Draw middle indicator
-    drawLine(ctx, {x: 1000-(indicatorWidth/2), y: 500, x1: 1000-(indicatorWidth/2), y1: 0}, {color:"#000"}, "butt");
-    drawLine(ctx, {x: 1000+(indicatorWidth/2), y: 500, x1: 1000+(indicatorWidth/2), y1: 0}, {color:"#000"}, "butt");
+    drawLine(ctx, {x: 1000-(widthRect/2), y: 500, x1: 1000-(widthRect/2), y1: 0}, {color:"#000"}, "butt");
+    drawLine(ctx, {x: 1000+(widthRect/2), y: 500, x1: 1000+(widthRect/2), y1: 0}, {color:"#000"}, "butt");
 };
 
 
-const drawCoverage = (ctx, data) => {
-    const range = data.length -1;
+const drawCoverage = (ctx, alignments) => {
+    const range = alignments.length -1;
     const widthRect = 2000 / range;
     let l = 2000/2;
     let r = l+widthRect;
 
-    let i = Math.ceil(data.length/2);
+    let i = Math.ceil(alignments.length/2);
     let j = i - 1;
     
     while (j >= 0)
     {
-        drawLine(ctx, {x: l, y: 150, x1: l, y1: data[j]}, {width: widthRect, color:"#add8e6"}, "butt")
+        drawLine(ctx, {x: l, y: 150, x1: l, y1: alignments[j]}, {width: widthRect, color:"#add8e6"}, "butt")
         j --;
         l -= widthRect;
-        if (i < data.length) {
-            drawLine(ctx, {x: r, y: 150, x1: r, y1: data[i]}, {width: widthRect, color:"#add8e6"}, "butt")
+        if (i < alignments.length) {
+            drawLine(ctx, {x: r, y: 150, x1: r, y1: alignments[i]}, {width: widthRect, color:"#add8e6"}, "butt")
             i ++;
             r += widthRect;
         }
     }
 };
 
-const Alignments = ({data, genomeViewer:{min, max}}) => {
+const Alignments = ({data, genomeViewer:{alignments, min, max}}) => {
     const classes = useStyles();
     const ctxRef = useRef(null);
 
@@ -144,22 +210,24 @@ const Alignments = ({data, genomeViewer:{min, max}}) => {
     };
 
     useEffect(() => {
-        let ctx = ctxRef.current;
-        const alignmentCanvas = document.getElementById('alignments');
-        ctx = alignmentCanvas.getContext("2d");
-        ctx.clearRect(0, 0, alignmentCanvas.width, alignmentCanvas.height);
-        drawAlignments(ctx, {min,max});
-
-
-        const coverageCanvas = document.getElementById('coverage');
-        ctx = coverageCanvas.getContext("2d");
-        ctx.clearRect(0, 0, coverageCanvas.width, coverageCanvas.height);
-        drawCoverage(ctx, data);
-    }, [min, max]);
+        if(alignments !== null){
+            let ctx = ctxRef.current;
+            const alignmentCanvas = document.getElementById('alignments');
+            ctx = alignmentCanvas.getContext("2d");
+            ctx.clearRect(0, 0, alignmentCanvas.width, alignmentCanvas.height);
+            drawAlignments(ctx, alignments, {min,max});
+    
+    
+            // const coverageCanvas = document.getElementById('coverage');
+            // ctx = coverageCanvas.getContext("2d");
+            // ctx.clearRect(0, 0, coverageCanvas.width, coverageCanvas.height);
+            // drawCoverage(ctx, data);
+        }
+    }, [alignments]);
 
     return(
         <Fragment>
-            <Grid container xs={12} className={classes.coverageContainer}>
+            {/* <Grid container xs={12} className={classes.coverageContainer}>
                 <Grid item xs={1} className={classes.labelContainer}>
                     <label className={classes.labelText}>COVERAGE</label>
                 </Grid>
@@ -169,7 +237,7 @@ const Alignments = ({data, genomeViewer:{min, max}}) => {
                         height: '100%',
                     }}></canvas>
                 </Grid>
-            </Grid>
+            </Grid> */}
             <Grid container xs={12} className={classes.alignmentContainer}>
                 <Grid item xs={1} className={classes.labelContainer}>
                     <label className={classes.labelText}>ALIGNMENTS</label>

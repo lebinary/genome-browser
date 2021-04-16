@@ -4,14 +4,11 @@ import { connect } from 'react-redux';
 import {zoomOut, zoomIn, moveLeft, moveRight, getData, loadBamFile} from '../actions';
 import {
     Grid,
-    makeStyles,
-    Checkbox } from '@material-ui/core';
+    makeStyles } from '@material-ui/core';
 import _ from 'lodash';
 
 import Gene from './Gene';
 import ErrorDialog from './ErrorDialog';
-import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
-import CheckBoxIcon from '@material-ui/icons/CheckBox';
 import Alignments from './Alignments';
 
 const useStyles = makeStyles((theme) => ({
@@ -162,7 +159,13 @@ const drawReference = (ctx, reference) => {
     }
 }
 
-const GenomeViewer = ({getData, loadBamFile, zoomIn, zoomOut, moveLeft, moveRight, genomeViewer:{min, max,data, settings, reference, title, bamFile}}) => {
+const GenomeViewer = ({getData, 
+                        loadBamFile, 
+                        zoomIn, 
+                        zoomOut, 
+                        moveLeft, 
+                        moveRight, 
+                        genomeViewer:{min, max,data, settings, reference, title, bamFile}}) => {
     const classes = useStyles();
     const [isDragging, setDragging] = useState(false);
     const [clientX, setClientX] = useState(null);
@@ -170,13 +173,15 @@ const GenomeViewer = ({getData, loadBamFile, zoomIn, zoomOut, moveLeft, moveRigh
     const {checkedReference, checkedGene, checkedAlignment} = settings;
 
     const handleWheel = e => {
-        if (e.deltaY < 0) {
-            if(max-min>10){
-                zoomIn();
-            }
-        } else {
-            if(max-min<1000000){
-                zoomOut();
+        if(checkedReference || checkedGene || checkedAlignment){
+            if (e.deltaY < 0) {
+                if(max-min>10){
+                    zoomIn();
+                }
+            } else {
+                if(max-min<1000000){
+                    zoomOut();
+                }
             }
         }
     }
@@ -245,7 +250,7 @@ const GenomeViewer = ({getData, loadBamFile, zoomIn, zoomOut, moveLeft, moveRigh
     }, [min,max, getData, title, bamFile, loadBamFile]);
 
     useMemo(() => {
-        if(reference !== ""){
+        if(reference !== "" && checkedReference){
             let ctx = ctxRef.current;
             const referenceCanvas = document.getElementById('reference');
             ctx = referenceCanvas.getContext("2d");

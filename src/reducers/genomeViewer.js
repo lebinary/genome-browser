@@ -20,12 +20,12 @@ const initialState = {
     headers: [],
     data: [],
     reference: "",
-    min: 200000,
-    max: 200010,
+    min: 100000,
+    max: 100010,
     error: false,
     errorMessage: "",
     bamFile: null,
-    alignments: {},
+    alignments: null,
     isSetting: false,
     settings: {
         checkedReference: true,
@@ -82,7 +82,7 @@ export default function(state = initialState, action) {
         case CLOSE_SETTING:
             return {...state, isSetting: false};
         case UPDATE_SETTINGS:
-            return {...state, settings: payload};
+            return {...state, settings: payload.settingsObj, bamFile: payload.bamFile};
         default:
             return state;
     }
