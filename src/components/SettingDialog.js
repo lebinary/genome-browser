@@ -38,7 +38,7 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-const SettingDialog = ({closeSetting, updateSettings, genomeViewer:{isSetting}}) => {
+const SettingDialog = ({closeSetting, updateSettings, genomeViewer:{settings, isSetting}}) => {
     const classes = useStyles();
     const [uploadState, setUploadState] = useState({
       file: null,
@@ -47,19 +47,31 @@ const SettingDialog = ({closeSetting, updateSettings, genomeViewer:{isSetting}})
     const [state, setState] = useState({
         checkedReference: true,
         checkedGene: true,
-        checkedAlignment: true,
+        checkedAlignment: false,
     });
-    
+
     const handleChange = (e) => {
         setState({ ...state, [e.target.name]: e.target.checked });
         removeFile();
     };
 
     const updateTrack = () => {
-      if(state && uploadState.file !== null){
+      if(state.checkedAlignment===true && uploadState.file!==null){
         updateSettings(state, uploadState.file);
         closeSetting();
       }
+      else{
+        updateSettings(state, null);
+        closeSetting();
+      }
+    }
+
+    const cancelSetting = (e) => {
+      closeSetting();
+      if(settings.checkedAlignment === false){
+        setUploadState({file: null, fileName: ""});
+      }
+      setState(settings);
     }
 
     const getFile = (e) => {
@@ -71,7 +83,6 @@ const SettingDialog = ({closeSetting, updateSettings, genomeViewer:{isSetting}})
       const file = e.target.files[0];
       const name = e.target.files[0].name;
 
-      console.log(e.target.value)
       setUploadState({file: file, fileName:name})
     }
 
@@ -139,10 +150,10 @@ const SettingDialog = ({closeSetting, updateSettings, genomeViewer:{isSetting}})
         </div>
       </DialogContent>
       <DialogActions>
-        <Button autoFocus onClick={closeSetting} color="primary">
+        <Button autoFocus onClick={cancelSetting} color="primary">
           Cancel
         </Button>
-        <Button onClick={updateTrack} color="primary">
+        <Button disabled={state.checkedAlignment===true && uploadState.file===null} onClick={updateTrack} color="primary">
           Ok
         </Button>
       </DialogActions>

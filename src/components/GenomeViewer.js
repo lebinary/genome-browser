@@ -123,11 +123,10 @@ const drawReference = (ctx, reference) => {
     let l = 2000/2;
     let r = l+widthRect;
 
+    let i = Math.ceil(splittedRef.length/2);
+    let j = i - 1;
+
     if(range <= 100){
-        
-        let i = Math.ceil(splittedRef.length/2);
-        let j = i - 1;
-        
         while (j >= 0)
         {
             drawLetter(ctx, splittedRef[j], {x: l, y: 45}, widthRect);
@@ -140,9 +139,6 @@ const drawReference = (ctx, reference) => {
             }
         }
     }else{
-        let i = Math.ceil(splittedRef.length/2);
-        let j = i - 1;
-        
         while (j >= 0)
         {
             let color = selectColor(splittedRef[j]);
@@ -165,7 +161,7 @@ const GenomeViewer = ({getData,
                         zoomOut, 
                         moveLeft, 
                         moveRight, 
-                        genomeViewer:{min, max,data, settings, reference, title, bamFile}}) => {
+                        genomeViewer:{min, max, settings, reference, title, bamFile}}) => {
     const classes = useStyles();
     const [isDragging, setDragging] = useState(false);
     const [clientX, setClientX] = useState(null);
@@ -269,7 +265,7 @@ const GenomeViewer = ({getData,
                     <Grid container xs={12} className={classes.referenceContainer}>
                         <Grid item xs={1} className={classes.labelContainer}>
                             <div className={classes.label}>
-                                <label className={classes.labelText}>REFERENCE</label>
+                                <label className={classes.labelText} draggable="false">REFERENCE</label>
                             </div>
                         </Grid>
                         <Grid className={classes.reference} item xs={11}>
@@ -281,7 +277,7 @@ const GenomeViewer = ({getData,
                     </Grid>
                 }
                 {checkedGene && <Gene />}
-                {checkedAlignment && <Alignments data={data}/>}
+                {checkedAlignment && <Alignments/>}
             </Grid>
             <ErrorDialog />
         </div>

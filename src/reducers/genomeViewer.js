@@ -30,7 +30,7 @@ const initialState = {
     settings: {
         checkedReference: true,
         checkedGene: true,
-        checkedAlignment: true,
+        checkedAlignment: false,
     }
 };
 
@@ -46,6 +46,9 @@ export default function(state = initialState, action) {
         case ZOOM_IN:
             return {...state, min: state.min +2, max: state.max -2};
         case ZOOM_OUT:
+            if(state.min === 0){
+                state.min = 1;
+            }
             return {...state, min: state.min>1? state.min -2: state.min, max: state.max<3000000000? state.max +2 : state.max};
         case MOVE_LEFT:
             if(state.min -payload.moveDistance < 1){

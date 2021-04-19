@@ -178,6 +178,7 @@ const ActionBar = ({getHeaders, changeReference, setRange, openSetting, genomeVi
             <Autocomplete
               ref={editTitleRef}
               onChange={handleNewReference}
+              defaultValue={title}
               value={newRef}
               style={{width: 200}}
               ListboxComponent={ListboxComponent}
