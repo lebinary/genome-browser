@@ -104,7 +104,7 @@ const ActionBar = ({getHeaders, changeReference, setRange, openSetting, genomeVi
   const [pos1, setPos1] = useState('');
   const [pos2, setPos2] = useState('');
   const [editMode, setEditMode] = useState(false);
-  const [newRef, setNewRef] = useState(title);
+  const [newRef, setNewRef] = useState('');
   const editTitleRef = useRef(null);
 
   const handleNewReference = (e) => {
@@ -128,13 +128,13 @@ const ActionBar = ({getHeaders, changeReference, setRange, openSetting, genomeVi
     }
   };
 
-  const handleChangeFrom = (e) => {
+  const handleChangePos1 = (e) => {
     if(e.target.value != null){
       setPos1(e.target.value);
     }
   };
 
-  const handleChangeTo = (e) => {
+  const handleChangePos2 = (e) => {
     if(e.target.value != null){
       setPos2(e.target.value);
     }
@@ -178,14 +178,13 @@ const ActionBar = ({getHeaders, changeReference, setRange, openSetting, genomeVi
             <Autocomplete
               ref={editTitleRef}
               onChange={handleNewReference}
-              defaultValue={title}
-              value={newRef}
+              value={title}
               style={{width: 200}}
               ListboxComponent={ListboxComponent}
               renderGroup={renderGroup}
               options={headers}
               groupBy={(option) => option[0].toUpperCase()}
-              renderInput={(params) => <TextField value={newRef} className={classes.editTitle} {...params}/>}
+              renderInput={(params) => <TextField value={title} className={classes.editTitle} {...params}/>}
               renderOption={(option) => <p onClick={(e)=> console.log(e)}>{option}</p>}
             />
           </FormControl>
@@ -197,7 +196,7 @@ const ActionBar = ({getHeaders, changeReference, setRange, openSetting, genomeVi
                 className={classes.input}
                 placeholder={min.toString()}
                 type="number"
-                onChange={handleChangeFrom}
+                onChange={handleChangePos1}
                 value={pos1}
               />
               
@@ -207,7 +206,7 @@ const ActionBar = ({getHeaders, changeReference, setRange, openSetting, genomeVi
                 className={classes.input}
                 placeholder={max.toString()}
                 type="number"
-                onChange={handleChangeTo}
+                onChange={handleChangePos2}
                 value={pos2}
               />
             </Paper>

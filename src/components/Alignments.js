@@ -42,6 +42,7 @@ const useStyles = makeStyles((theme) => ({
 
     '@global': {
         '::-webkit-scrollbar': {
+            height: '5px',
             width: '5px',
             zIndex: "1000",
         },
@@ -152,7 +153,7 @@ const drawCoverage = (coverageCtx, max, min) => {
         drawLine(coverageCtx, {x: l, y: 150, x1: l, y1: 150-(count*coverageUnitPixel)}, {width: widthRect, color:"#add8e6"}, "butt");
         j --;
         l -= widthRect;
-        if (i <= range) {
+        if (i < range) {
             let count = 0;
             for(let y = alignmentThickness/2; y < 500; y+=alignmentThickness){
                 const p = ctx.getImageData(r, y, 1, 1).data;
@@ -164,6 +165,18 @@ const drawCoverage = (coverageCtx, max, min) => {
             drawLine(coverageCtx, {x: r, y: 150, x1: r, y1: 150-(count*coverageUnitPixel)}, {width: widthRect, color:"#add8e6"}, "butt");
             i ++;
             r += widthRect;
+        }
+        else if(i===range){
+            let count = 0;
+            let r = 2000-widthRect/4;
+            for(let y = alignmentThickness/2; y < 500; y+=alignmentThickness){
+                const p = ctx.getImageData(r, y, 1, 1).data;
+                const hex = "#" + ("000000" + rgbToHex(p[0], p[1], p[2])).slice(-6);
+                if(hex === "#e6e6e4") {
+                    count+=1;
+                }
+            }
+            drawLine(coverageCtx, {x: 2000, y: 150, x1: 2000, y1: 150-(count*coverageUnitPixel)}, {width: widthRect, color:"#add8e6"}, "butt");
         }
     }
 };

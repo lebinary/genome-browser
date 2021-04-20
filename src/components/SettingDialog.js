@@ -44,6 +44,7 @@ const SettingDialog = ({closeSetting, updateSettings, genomeViewer:{settings, is
       file: null,
       fileName: "",
     });
+    
     const [state, setState] = useState({
         checkedReference: true,
         checkedGene: true,
@@ -52,7 +53,9 @@ const SettingDialog = ({closeSetting, updateSettings, genomeViewer:{settings, is
 
     const handleChange = (e) => {
         setState({ ...state, [e.target.name]: e.target.checked });
-        removeFile();
+        if(e.target.name === "checkedAlignment" && e.target.checked === false){
+          removeFile();
+        }
     };
 
     const updateTrack = () => {
