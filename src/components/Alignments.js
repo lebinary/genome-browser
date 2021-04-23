@@ -142,7 +142,7 @@ const mockData = [
         pos1: "10001",
         pos2: "10021",
         des: "GTTTTTTTTTATTTTTTTTTG",
-    },
+    }
 ]
 
 const selectColor = (letter) => {
@@ -209,7 +209,7 @@ const drawAlignments = (ctx, alignments, reference, min, max) => {
     // Draw Alignments
     alignments.forEach(alignment => {
         const {iteration, pos1, pos2, des} = alignment;
-        // let y = (iteration*alignmentThickness) - alignmentThickness/2;
+        let y = (iteration*alignmentThickness) - alignmentThickness/2;
         let y1 = (iteration-1)*alignmentThickness;
 
         // left side
@@ -221,6 +221,7 @@ const drawAlignments = (ctx, alignments, reference, min, max) => {
             let j = i - 1;
 
             if((max-min)%2 === 0){
+                drawLine(ctx, { x: 0, y: y, x1: ((parseInt(pos2)-min) * widthRect + widthRect/2), y1: y}, {color: "#e6e6e4", width: alignmentThickness}, "butt");
                 while (j >= 0)
                 {
                     if(reference[j] !== str[j]) {
@@ -239,6 +240,7 @@ const drawAlignments = (ctx, alignments, reference, min, max) => {
                     }
                 }
             }else{
+                drawLine(ctx, { x: 0, y: y, x1: ((parseInt(pos2)-min) * widthRect + widthRect), y1: y}, {color: "#e6e6e4", width: alignmentThickness}, "butt");
                 while (j >= 0)
                 {
                     if(reference[j] !== str[j]) {
@@ -269,6 +271,7 @@ const drawAlignments = (ctx, alignments, reference, min, max) => {
             let j = i - 1;
 
             if((max-min)%2 === 0){
+                drawLine(ctx, { x: ((parseInt(pos1)-min) * widthRect - widthRect/2), y: y, x1: 2000, y1: y}, {color: "#e6e6e4", width: alignmentThickness}, "butt");
                 while (j >= 0)
                 {
                     if(reference[parseInt(pos1)-min+j] !== str[j]) {
@@ -287,6 +290,7 @@ const drawAlignments = (ctx, alignments, reference, min, max) => {
                     }
                 }
             }else{
+                drawLine(ctx, { x: 0, y: y, x1: 2000, y1: y}, {color: "#e6e6e4", width: alignmentThickness}, "butt");
                 while (j >= 0)
                 {
                     if(reference[parseInt(pos1)-min+j] !== str[j]) {
@@ -315,6 +319,7 @@ const drawAlignments = (ctx, alignments, reference, min, max) => {
             let j = i - 1;
 
             if((max-min)%2===0){
+                drawLine(ctx, { x: ((parseInt(pos1)-min) * widthRect - widthRect/2), y: y, x1: ((parseInt(pos2)-min) * widthRect + widthRect/2), y1: y}, {color: "#e6e6e4", width: alignmentThickness}, "butt");
                 while (j >= 0)
                 {
                     if(reference[parseInt(pos1)-min+j] !== des[j]) {
@@ -333,6 +338,7 @@ const drawAlignments = (ctx, alignments, reference, min, max) => {
                     }
                 }
             }else{
+                drawLine(ctx, { x: ((parseInt(pos1)-min) * widthRect), y: y, x1: ((parseInt(pos2)-min) * widthRect + widthRect), y1: y}, {color: "#e6e6e4", width: alignmentThickness}, "butt");
                 while (j >= 0)
                 {
                     if(reference[parseInt(pos1)-min+j] !== des[j]) {
@@ -361,8 +367,10 @@ const drawAlignments = (ctx, alignments, reference, min, max) => {
             let r = l+widthRect;
             let i = Math.ceil(str.length/2);
             let j = i - 1;
+            drawLine(ctx, { x: 0, y: y, x1: 2000, y1: y}, {color: "#e6e6e4", width: alignmentThickness}, "butt");
 
             if((max-min)%2===0){
+                drawLine(ctx, { x: ((parseInt(pos1)-min) * widthRect - widthRect/2), y: y, x1: ((parseInt(pos2)-min) * widthRect + widthRect/2), y1: y}, {color: "#e6e6e4", width: alignmentThickness}, "butt");
                 while (j >= 0)
                 {
                     if(reference[j] !== des[j]) {
@@ -381,6 +389,7 @@ const drawAlignments = (ctx, alignments, reference, min, max) => {
                     }
                 }
             }else{
+                drawLine(ctx, { x: ((parseInt(pos1)-min) * widthRect), y: y, x1: ((parseInt(pos2)-min) * widthRect + widthRect), y1: y}, {color: "#e6e6e4", width: alignmentThickness}, "butt");
                 while (j >= 0)
                 {
                     if(reference[j] !== des[j]) {
