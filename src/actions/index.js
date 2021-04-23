@@ -129,10 +129,9 @@ export const loadBamFile = (title, min, max, bamFile) => async (dispatch) => {
                 iteration: el[0],
                 pos1: el[1],
                 pos2: el[2],
-                description: el[3],
+                des: el[3],
             }
             data.push(item);
-
         });
 
         try {

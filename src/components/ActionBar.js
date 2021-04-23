@@ -89,6 +89,11 @@ const useStyles = makeStyles((theme) => ({
       height: "100%",
       fontWeight: "bold",
       color: "#2f2f66",
+    },
+    settingButton: {
+      display: "flex",
+      flexDirection: "column",
+      justifyContent: "center",
     }
 }));
 
@@ -169,63 +174,63 @@ const ActionBar = ({getHeaders, changeReference, setRange, openSetting, genomeVi
 
   return(
     <div className={classes.root}>
-    <div className={classes.container} onKeyPress={changeRef}>
-      <div className={classes.titleArea}>
+      <div className={classes.container} onKeyPress={changeRef}>
         <div className={classes.titleArea}>
-          <img src={mainLogo} className={classes.logo} alt="vinbigdata"/>
-          <Button onDoubleClick={handleEditMode} style={{display: editMode? 'none': 'block'}} className={classes.title}>{title}</Button>
-          <FormControl style={{display: editMode? 'block': 'none'}}>
-            <Autocomplete
-              ref={editTitleRef}
-              onChange={handleNewReference}
-              value={title}
-              style={{width: 200}}
-              ListboxComponent={ListboxComponent}
-              renderGroup={renderGroup}
-              options={headers}
-              groupBy={(option) => option[0].toUpperCase()}
-              renderInput={(params) => <TextField value={title} className={classes.editTitle} {...params}/>}
-              renderOption={(option) => <p onClick={(e)=> console.log(e)}>{option}</p>}
-            />
-          </FormControl>
-        </div>
-        <div className={classes.searchContainer}>
-          <div className={classes.searchArea}>
-            <Paper component="form" className={classes.paper}>
-              <InputBase
-                className={classes.input}
-                placeholder={min.toString()}
-                type="number"
-                onChange={handleChangePos1}
-                value={pos1}
+          <div className={classes.titleArea}>
+            <img src={mainLogo} className={classes.logo} alt="vinbigdata"/>
+            <Button onDoubleClick={handleEditMode} style={{display: editMode? 'none': 'block'}} className={classes.title}>{title}</Button>
+            <FormControl style={{display: editMode? 'block': 'none'}}>
+              <Autocomplete
+                ref={editTitleRef}
+                onChange={handleNewReference}
+                value={title}
+                style={{width: 200}}
+                ListboxComponent={ListboxComponent}
+                renderGroup={renderGroup}
+                options={headers}
+                groupBy={(option) => option[0].toUpperCase()}
+                renderInput={(params) => <TextField value={title} className={classes.editTitle} {...params}/>}
+                renderOption={(option) => <p onClick={(e)=> console.log(e)}>{option}</p>}
               />
-              
-              :
+            </FormControl>
+          </div>
+          <div className={classes.searchContainer}>
+            <div className={classes.searchArea}>
+              <Paper component="form" className={classes.paper}>
+                <InputBase
+                  className={classes.input}
+                  placeholder={min.toString()}
+                  type="number"
+                  onChange={handleChangePos1}
+                  value={pos1}
+                />
+                
+                :
 
-              <InputBase
-                className={classes.input}
-                placeholder={max.toString()}
-                type="number"
-                onChange={handleChangePos2}
-                value={pos2}
-              />
-            </Paper>
-            <Button variant="contained" color="primary" 
-            disabled={((pos2-pos1<10) || pos2 === '' || (pos1 === '' && pos1 > 0))}
-            className={classes.button} 
-            onClick={handleClick}>
-              GO
-            </Button>
+                <InputBase
+                  className={classes.input}
+                  placeholder={max.toString()}
+                  type="number"
+                  onChange={handleChangePos2}
+                  value={pos2}
+                />
+              </Paper>
+              <Button variant="contained" color="primary"
+              disabled={((pos2-pos1<10) || pos2 === '' || (pos1 === '' && pos1 > 0))}
+              className={classes.button}
+              onClick={handleClick}>
+                GO
+              </Button>
+            </div>
           </div>
         </div>
+        <div className={classes.settingButton}>
+          <IconButton onClick={openSetting} color="primary">
+            <SettingsIcon />
+          </IconButton>
+        </div>
+        <SettingDialog/>
       </div>
-      <div>
-        <IconButton onClick={openSetting} color="primary">
-          <SettingsIcon />
-        </IconButton>
-      </div>
-      <SettingDialog/>
-    </div>
     </div>
   );
 };
