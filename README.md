@@ -106,11 +106,18 @@ To get a local copy up and running follow these simple example steps.
    ```sh
    npm install
    ```
-3. Run locally
+3. Run server file
+   ```sh
+   cd server/
+   ```
+   ```sh
+   python run genome_browser_server.py
+   ```
+4. Run locally
    ```sh
    npm start
    ```
-4. Build production version
+5. Build production version (Optional)
    ```sh
    npm run build
    ```
@@ -136,19 +143,27 @@ To get a local copy up and running follow these simple example steps.
    </div>
    ```
 4. Some useful props you can use
+
    a. Choose desired chromosome
+
    ```js
    <GenomeBrowserApp chrNum='chr1' />
    ```
+
    b. Choose desired human genome: 'hg38' or 'hg19'
+
    ```js
    <GenomeBrowserApp id='hg38' />
    ```
+
    c. Host your own server with your genome data
+
    ```js
    <GenomeBrowserApp serverUrl='http://3.143.149.107:8000' />
    ```
+
    d. Choose your preferred starting and ending positions:
+
    ```js
    <GenomeBrowserApp pos1='1287123' pos2='1287193' />
    ```
