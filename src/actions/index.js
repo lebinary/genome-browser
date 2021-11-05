@@ -1,38 +1,33 @@
 import {
     ZOOM_IN,
     ZOOM_OUT,
-    SET_RANGE,
     MOVE_LEFT,
     MOVE_RIGHT,
     GET_DATA,
     GET_HEADERS,
-    ERROR,
-    CLOSE_ERROR,
+    GET_SNPFIELDS,
     CHANGE_REFERENCE,
-    LOAD_BAMFILE,
-    OPEN_SETTING,
-    CLOSE_SETTING,
-    UPDATE_SETTINGS,
+    GET_DATA_BY_KW,
+    SET_PIVOT,
+    SET_REF,
+    SET_FILTER,
 } from '../types';
 import axios from 'axios';
-import { ContactSupportOutlined } from '@material-ui/icons';
 
-export const zoomIn = () => (dispatch) => {
+const CancelToken = axios.CancelToken;
+let cancel;
+
+export const zoomIn = (mousePosition, zoomScale) => (dispatch) => {
     dispatch({
         type: ZOOM_IN,
+        payload: {mousePosition, zoomScale},
     });
 };
   
-export const zoomOut = () => (dispatch) => {
+export const zoomOut = (mousePosition, zoomScale) => (dispatch) => {
     dispatch({
         type: ZOOM_OUT,
-    });
-};
-
-export const setRange = (rangeObj) => (dispatch) => {
-    dispatch({
-        type: SET_RANGE,
-        payload: rangeObj,
+        payload: {mousePosition, zoomScale},
     });
 };
 
@@ -50,100 +45,176 @@ export const moveRight = (moveDistance, range) => (dispatch) => {
     });
 };
 
-export const closeError = () => (dispatch) => {
+export const setPivot = (pivot) => (dispatch) => {
     dispatch({
-        type: CLOSE_ERROR,
+        type: SET_PIVOT,
+        payload: pivot    
     });
 };
 
-export const openSetting = () => (dispatch) => {
+export const setRefId = (refId) => (dispatch) => {
     dispatch({
-        type: OPEN_SETTING,
+        type: SET_REF,
+        payload: refId
     });
 };
 
-export const closeSetting = () => (dispatch) => {
-    dispatch({
-        type: CLOSE_SETTING,
-    });
-};
-
-export const updateSettings = (settingsObj, bamFile) => (dispatch) => {
-    dispatch({
-        type: UPDATE_SETTINGS,
-        payload: {settingsObj, bamFile},
-    });
-};
-
-export const getData = (title, rangeObj) => async (dispatch) => {
-    const {min, max} = rangeObj;
-
+export const getData = (serverUrl, title, rangeObj, refId=null) => async (dispatch) => {
     try {
-        const res = await axios.get(`http://${window.location.hostname}:8000/api?region=${title}:${min}-${max+1}`);
+        cancel && cancel();
+        const {min, max} = rangeObj;
+        let processedRef = [];
+        let requestUrl = `${serverUrl}/api?region=${title}:${min}-${max+1}`;
+        if(refId !== null) requestUrl += `&ref=${refId}`;
+        const res = await axios.get(requestUrl, {cancelToken: new CancelToken(function executor(c) {cancel = c})});
+        const {ref_id, header, interval, size, gencode, snp} = res.data;
+
+        if(interval <= 1) {
+            processedRef = res.data.ref.split("").map(item => [[item, 1]]);
+        }else{
+            const refData = res.data.ref[0];
+            refData.forEach(arr => {
+                const item = []
+                arr.forEach((count, index) => {
+                    if(count > 0){
+                        let dna = "";
+                        if(index === 0) dna = "A";
+                        else if(index === 1) dna = "T";
+                        else if(index === 2) dna = "G";
+                        else if(index === 3) dna = "C";
+                        else dna = "N";
+                        item.push([dna, count/interval])
+                    }
+                })
+                processedRef.push(item);
+            })
+        }
         dispatch({
             type: GET_DATA,
-            payload: {...res.data},
+            payload: {
+                refId: ref_id,
+                header: header,
+                min: min,
+                max: max,
+                reference: processedRef,
+                interval: interval,
+                frequencies: snp,
+                size: size,
+                gene_data: gencode.data, 
+                gene_type: gencode.type,},
         });
     }catch(err) {
-        dispatch({
-            type: ERROR,
-            payload: err,
-        });
+        if(axios.isCancel(err)){
+            console.log('Request canceled');
+        }else{
+            console.log(err);
+        }
     }
 };
 
-export const changeReference = (title, rangeObj) => async (dispatch) => {
+export const getDataByKeyword = (serverUrl, keyword, refId=null) => async (dispatch) => {
+    try {
+        let processedRef = [];
+        let requestUrl = `${serverUrl}/api?keyword=${keyword}`;
+        if(refId !== null) requestUrl += `&ref=${refId}`;
+        const res = await axios.get(`${serverUrl}/api?keyword=${keyword}`);
+        
+        if(res.data){
+            const {ref_id, header, interval, size, gencode, snp, pos, highlight} = res.data;
+    
+            if(interval <= 1) {
+                processedRef = res.data.ref.split("").map(item => [[item, 1]]);
+            }else{
+                const refData = res.data.ref[0];
+                refData.forEach(arr => {
+                    const item = [];
+                    arr.forEach((count, index) => {
+                        if(count !== 0){
+                            let dna = "";
+                            if(index === 0) dna = "A";
+                            else if(index === 1) dna = "T";
+                            else if(index === 2) dna = "G";
+                            else if(index === 3) dna = "C";
+                            else dna = "N";
+                            item.push([dna, count/interval])
+                        }
+                    })
+                    processedRef.push(item);
+                })
+            }
+            dispatch({
+                type: GET_DATA_BY_KW,
+                payload: {
+                    refId: ref_id,
+                    keyword: keyword,
+                    reference: processedRef,
+                    header: header,
+                    interval: interval,
+                    frequencies: snp,
+                    size: size,
+                    highlight: highlight,
+                    pos: pos,
+                    gene_data: gencode.data, 
+                    gene_type: gencode.type,},
+            });
+        }
+    }catch(err) {
+        if(axios.isCancel(err)){
+            console.log('Request canceled');
+        }else{
+            console.log(err)
+        }
+    }
+};
+
+export const changeReference = (referenceId, title, rangeObj) => async (dispatch) => {
     const {min, max} = rangeObj;
 
     dispatch({
         type: CHANGE_REFERENCE,
-        payload: {title, min, max},
+        payload: {referenceId, title, min, max},
     });
 };
 
-export const getHeaders = () => async (dispatch) => {
+export const getHeaders = (serverUrl) => async (dispatch) => {
     try {
-        const res = await axios.get(`http://${window.location.hostname}:8000/api?headers`);
+        const res = await axios.get(`${serverUrl}/api?headers`);
+
+        const headers = [];
+        const headerMax = [];
+        res.data.headers.forEach(item => {
+            headers.push(item[0]);
+            headerMax.push(item[1]);
+        });
         dispatch({
             type: GET_HEADERS,
-            payload: res.data,
+            payload: {headers, headerMax},
         });
+        return headers;
     }catch(err) {
-        dispatch({
-            type: ERROR,
-            payload: err,
-        });
+        console.log(err);
     }
 };
 
-export const loadBamFile = (title, min, max, bamFile) => async (dispatch) => {
-    let reader = new FileReader(); 
-    reader.readAsText(bamFile);
-    reader.onload = async () => {
-        let lines = reader.result.split('\n');
-
-        let data = [];
-        lines.forEach(line => {
-            let el = line.split('\t');
-            let item = {
-                iteration: el[0],
-                pos1: el[1],
-                pos2: el[2],
-                des: el[3],
-            }
-            data.push(item);
+export const getSNPFields = (serverUrl) => async (dispatch) => {
+    try {
+        const res = await axios.get(`${serverUrl}/api?dbSNFP_fields`);
+        dispatch({
+            type: GET_SNPFIELDS,
+            payload: res.data,
         });
+    }catch(err) {
+        console.log(err)
+    }
+};
 
-        try {
-            dispatch({
-                type: LOAD_BAMFILE,
-                payload: data
-            });
-        }catch(err) {
-            dispatch({
-                type: ERROR,
-                payload: err,
-            });
-        }
+export const setFilter = (newChecked) => (dispatch) => {
+    try {
+        dispatch({
+            type: SET_FILTER,
+            payload: newChecked,
+        });
+    }catch(err) {
+        console.log(err);
     }
 };
