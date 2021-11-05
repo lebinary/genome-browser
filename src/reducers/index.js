@@ -1,6 +1,6 @@
 import genomeViewer from './genomeViewer';
 import {combineReducers} from 'redux';
 
-export default combineReducers({     
+export const rootReducer = combineReducers({     
     genomeViewer,
 });

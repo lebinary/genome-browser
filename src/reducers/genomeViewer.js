@@ -1,91 +1,160 @@
 import {
     ZOOM_IN,
     ZOOM_OUT,
-    SET_RANGE,
     MOVE_LEFT,
     MOVE_RIGHT,
     GET_DATA,
     GET_HEADERS,
-    ERROR,
-    CLOSE_ERROR,
+    GET_SNPFIELDS,
     CHANGE_REFERENCE,
-    LOAD_BAMFILE,
-    OPEN_SETTING,
-    CLOSE_SETTING,
-    UPDATE_SETTINGS,
+    GET_DATA_BY_KW,
+    SET_PIVOT,
+    SET_REF,
+    SET_FILTER,
 } from '../types';
 
-const initialState = {
+export const initialState = {
+    serverUrl: 'http://3.143.149.107:8000',
     title: "chr1",
+    refId: 'hg38',
+    upperBoundary: 3000000000,
     headers: [],
-    data: [],
-    reference: "",
-    min: 100000,
-    max: 100010,
-    error: false,
-    errorMessage: "",
-    bamFile: null,
-    alignments: null,
-    isSetting: false,
-    settings: {
-        checkedReference: true,
-        checkedGene: true,
-        checkedAlignment: false,
-    }
+    headerMax: [],
+    prevRefence: [],
+    reference: [],
+    interval: 1,
+    size: 0,
+    pivot: 0,
+    currentKeyword: null,
+    highlight: [],
+    prevMin: 1286871,
+    min: 1287122,
+    max: 1287192,
+    genes: null,
+    genesType: null,
+    snpFields: null,
+    currentAction: "",
+    loading: false,
+    frequencies: null,
+    checked: ['0','1','2','3','4','5','6','7','8','9','10','11'],
 };
 
-const getRandomInt = (min, max) => {
-    min = Math.ceil(min);
-    max = Math.floor(max);
-    return Math.floor(Math.random() * (max - min + 1)) + min;
-};
-
+let leftRange;
+let rightRange;
+let newMin;
+let newMax;
 export default function(state = initialState, action) {
     const { type, payload } = action;
     switch(type){
         case ZOOM_IN:
-            return {...state, min: state.min +2, max: state.max -2};
+            newMin = payload.mousePosition - Math.round((payload.mousePosition - state.min)/payload.zoomScale);
+            newMax = payload.mousePosition + Math.round((state.max - payload.mousePosition)/payload.zoomScale);
+            return {...state,
+                    currentAction: 'zoomIn', 
+                    pivot: payload.mousePosition,
+                    min: newMin, 
+                    max: newMax,
+                    loading: true};
         case ZOOM_OUT:
-            if(state.min === 0){
-                state.min = 1;
-            }
-            return {...state, min: state.min>1? state.min -2: state.min, max: state.max<3000000000? state.max +2 : state.max};
+            leftRange = Math.round((payload.mousePosition - state.min)*payload.zoomScale);
+            rightRange = Math.round((state.max - payload.mousePosition)*payload.zoomScale);
+            newMin = (payload.mousePosition - leftRange)>1? (payload.mousePosition - leftRange) : 1;
+            newMax =  (payload.mousePosition + rightRange)<state.upperBoundary? (payload.mousePosition + rightRange) : state.upperBoundary;
+            return {...state,
+                    currentAction: 'zoomOut', 
+                    pivot: payload.mousePosition,
+                    min: newMin, 
+                    max:  newMax, 
+                    loading: true};
+        case SET_PIVOT:
+            return {...state, pivot: payload};
+        case SET_FILTER:
+            return {...state, checked: payload};
         case MOVE_LEFT:
             if(state.min -payload.moveDistance < 1){
-                return {...state, min: 1, max: 1+payload.range};
+                return {...state, 
+                    currentAction: 'moveLeft', 
+                    min: 1, 
+                    max: 1+ payload.range,
+                    loading: true};
             }else{
-                return {...state, min: state.min -payload.moveDistance, max: state.max -payload.moveDistance};
+                const slicedRef = state.prevRefence.slice(0, - Math.round(payload.moveDistance/state.interval));
+                return {...state,
+                    currentAction: 'moveLeft', 
+                    prevRefence: slicedRef.length===0? state.prevRefence : slicedRef,
+                    min: state.min -payload.moveDistance, 
+                    max: state.max -payload.moveDistance,
+                    loading: true};
             }
         case MOVE_RIGHT:
-            if(state.max +payload.moveDistance > 3000000000){
-                return {...state, min: 3000000000 - payload.range, max: 3000000000};
+            if(state.max +payload.moveDistance > state.upperBoundary){
+                newMin = state.upperBoundary - payload.range;
+                newMax = state.upperBoundary;
+                return {...state, 
+                    currentAction: 'moveRight',
+                    min: newMin,
+                    max: newMax,
+                    loading: true};
             }else{
-                return {...state, min: state.min +payload.moveDistance, max: state.max +payload.moveDistance};
+                return {...state,
+                    currentAction: 'moveRight',
+                    prevRefence: state.prevRefence.slice(Math.round(payload.moveDistance/state.interval)),
+                    min: state.min +payload.moveDistance, 
+                    max: state.max +payload.moveDistance,
+                    loading: true};
             }
-        case SET_RANGE:
-            return {...state, min: payload.pos1, max: payload.pos2};
+        case SET_REF:
+            return {...state, 
+                refId: payload,
+                loading: true,
+            };
         case GET_HEADERS:
-            return {...state, headers: payload.headers};
+            return {...state, headers: payload.headers, headerMax: payload.headerMax};
+        case GET_SNPFIELDS:
+            return {...state, snpFields: payload.dbSNFP_fields};
         case CHANGE_REFERENCE:
-            return {...state, title: payload.title, min: payload.min, max: payload.max};
+            const upperBoundary = parseInt(state.headerMax[state.headers.indexOf(payload.title)]);
+            newMin = payload.max > upperBoundary? upperBoundary-(payload.max- payload.min): payload.min;
+            newMax = payload.max > upperBoundary? upperBoundary : payload.max;
+            return {...state, 
+                refId: payload.referenceId,
+                title: payload.title,
+                upperBoundary: upperBoundary,
+                min: newMin, 
+                max: newMax}
         case GET_DATA:
-            let data = [];
-            for(let i=0; i <= (state.max - state.min); i++){
-                data.push(getRandomInt(0, 65));
-            }
-            return {...state, data: data, reference: payload.seq};
-        case LOAD_BAMFILE:
-            return {...state, alignments: payload};
-        case ERROR:
-            return {...state, error: true, errorMessage: payload.message};
-        case CLOSE_ERROR:
-            return {...state, error: false, errorMessage: ""};
-        case OPEN_SETTING:
-            return {...state, isSetting: true};
-        case CLOSE_SETTING:
-            return {...state, isSetting: false};
-        case UPDATE_SETTINGS:
-            return {...state, settings: payload.settingsObj, bamFile: payload.bamFile};
+            return {...state,
+                refId: payload.refId,
+                title: payload.header,
+                prevRefence: payload.reference,
+                prevMin: state.min,
+                min: payload.min,
+                max: payload.max,
+                reference: payload.reference, 
+                interval: payload.interval,
+                frequencies: payload.frequencies,
+                size: payload.size,
+                genes: payload.gene_data, 
+                genesType: payload.gene_type,
+                loading: false,
+            };
+        case GET_DATA_BY_KW:
+            return {...state,
+                refId: payload.refId,
+                currentKeyword: payload.keyword,
+                prevRefence: payload.reference,
+                title: payload.header,
+                prevMin: parseInt(payload.highlight[0]) - 15,
+                min: parseInt(payload.highlight[0]) - 15,
+                max: parseInt(payload.highlight[1]) + 15,
+                reference: payload.reference, 
+                interval: payload.interval,
+                frequencies: payload.frequencies,
+                size: payload.size,
+                genes: payload.gene_data, 
+                genesType: payload.gene_type,
+                highlight: payload.highlight,
+                loading: false};
         default:
             return state;
     }

@@ -11,7 +11,7 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-const LISTBOX_PADDING = 8; // px
+const LISTBOX_PADDING = 0; // px
 
 const renderRow = (props) => {
     const { data, index, style } = props;
