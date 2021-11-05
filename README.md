@@ -36,6 +36,8 @@
     <br />
     <a href="https://youtu.be/jPPwD95kp28">View Demo</a>
     ·
+    <a href="https://www.npmjs.com/package/genome-browser">View Package</a>
+    .
     <a href="https://github.com/lebinh190998/genome-browser/issues">Report Bug</a>
     ·
     <a href="https://github.com/lebinh190998/genome-browser/issues">Request Feature</a>
@@ -85,6 +87,8 @@ Inspired by "igv" and "varsome" genome browsers, I built an interactive genome b
 Frameworks/libraries used to bootstrap this project.
 
 - [React.js](https://reactjs.org/)
+- [Python](https://www.python.org/)
+- [C++](https://www.cplusplus.com/)
 - [HTML Canvas](https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API)
 - [MaterialUI](https://mui.com/)
 
