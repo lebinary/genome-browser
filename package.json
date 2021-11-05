@@ -39,9 +39,7 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "build": "rollup -c",
-    "build-watch": "rollup -c -w",
-    "start-playground": "cd playground && npm run start",
-    "i-all": "npm i && cd playground && npm i"
+    "build-watch": "rollup -c -w"
   },
   "eslintConfig": {
     "extends": [
