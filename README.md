@@ -115,7 +115,7 @@ To get a local copy up and running follow these simple example steps.
    cd server/
    ```
    ```sh
-   python run genome_browser_server.py
+   python genome_browser_server.py
    ```
 4. Run locally
    ```sh
