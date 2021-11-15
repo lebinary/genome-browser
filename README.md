@@ -131,6 +131,7 @@ To get a local copy up and running follow these simple example steps.
 <!-- USAGE EXAMPLES -->
 
 ## Use as a package
+<a href="https://www.npmjs.com/package/genome-browser">View Package</a>
 
 1. Download genome-browser package
    ```sh
