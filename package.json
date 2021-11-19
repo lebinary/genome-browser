@@ -59,6 +59,9 @@
       "last 1 safari version"
     ]
   },
+  "publishConfig": {
+    "@lebinh190998:registry": "https://npm.pkg.github.com"
+  },
   "devDependencies": {
     "@babel/cli": "^7.14.5",
     "@babel/core": "^7.12.3",
