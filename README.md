@@ -78,7 +78,7 @@
   <img align="center" src="public/cover.png" alt="Cover Image" width="800" height="400">
 </a>
 
-Inspired by "igv" and "varsome" genome browsers, I built an interactive genome browser tool from scratch using Reactjs which bioinformatics researchers can visualize and analyze their data.
+Inspired by "igv" and "varsome" genome browsers, I built an interactive genome browser tool from scratch using Reactjs which helps bioinformatics researchers visualize and analyze their data.
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
