@@ -76,6 +76,7 @@
 
 <a href="https://www.youtube.com/watch?v=jPPwD95kp28&ab_channel=BinhLe">
   <img align="center" src="public/cover.png" alt="Cover Image" width="800" height="400">
+    <img align="center" src="public/GB_2.png" alt="Cover Image" width="800" height="400">
 </a>
 
 Inspired by "igv" and "varsome" genome browsers, I built an interactive genome browser tool from scratch using Reactjs which helps bioinformatics researchers visualize and analyze their data.
